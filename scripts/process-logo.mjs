@@ -1,4 +1,4 @@
-// Removes dark brushed-metal background; exports transparent PNG.
+// Keeps only logo artwork (figure, trails, text) — removes gray patch + dark backdrop.
 // Run with: npm run logo:process
 
 import sharp from 'sharp'
@@ -12,27 +12,33 @@ const outputPath = path.join(projectRoot, 'public', 'rolln-logo.png')
 
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
 
-/** Dark matte carbon / brushed slate backdrop baked into the export. */
-function isBackgroundPixel(r, g, b) {
-  const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  const l = luma(r, g, b)
-
-  if (sat > 24) return false
-  if (l >= 88) return false
-  if (l <= 72) return true
-
-  return false
+function isWarmMetal(r, g, b) {
+  return r > 108 && g > 78 && b < 98 && r > b + 14 && r >= g - 20
 }
 
-function isLogoCore(r, g, b) {
+function isCyanEnergy(r, g, b) {
+  return b > 105 && b > r + 28
+}
+
+function isVitalityGreen(r, g, b) {
+  return g > 125 && g > r + 32 && g > b + 10
+}
+
+function isCircuitGold(r, g, b) {
+  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+  return r > 155 && g > 105 && sat > 38
+}
+
+function isLogoPixel(r, g, b) {
+  if (isWarmMetal(r, g, b) || isCyanEnergy(r, g, b) || isVitalityGreen(r, g, b) || isCircuitGold(r, g, b)) {
+    return true
+  }
+
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
   const l = luma(r, g, b)
 
-  if (l >= 78) return true
-  if (sat > 20) return true
-  if (b > r + 14 && b > g - 5) return true
-  if (g > r + 14) return true
-  if (r > g + 10 && r > 100) return true
+  if (sat > 55 && l > 35) return true
+  if (l > 175 && sat > 28) return true
 
   return false
 }
@@ -46,12 +52,12 @@ function buildLogoMask(data, width, height) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const p = idx(width, x, y)
-      if (isLogoCore(data[p], data[p + 1], data[p + 2])) core[y * width + x] = 1
+      if (isLogoPixel(data[p], data[p + 1], data[p + 2])) core[y * width + x] = 1
     }
   }
 
   const mask = new Uint8Array(width * height)
-  const radius = 5
+  const radius = 4
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (!core[y * width + x]) continue
@@ -80,10 +86,8 @@ const out = Buffer.alloc(data.length)
 for (let y = 0; y < height; y++) {
   for (let x = 0; x < width; x++) {
     const p = idx(width, x, y)
-    const i = y * width + x
-    const keep = logoMask[i] || !isBackgroundPixel(data[p], data[p + 1], data[p + 2])
 
-    if (!keep) {
+    if (!logoMask[y * width + x]) {
       out[p] = 0
       out[p + 1] = 0
       out[p + 2] = 0
@@ -103,19 +107,22 @@ await sharp(out, {
 })
   .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
   .extend({
-    top: 12,
-    bottom: 10,
-    left: 10,
-    right: 10,
+    top: 8,
+    bottom: 8,
+    left: 8,
+    right: 8,
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   })
   .png({ compressionLevel: 9 })
   .toFile(outputPath)
 
 let transparent = 0
-for (let i = 3; i < out.length; i += 4) {
-  if (out[i] === 0) transparent++
+const total = width * height
+for (let y = 0; y < height; y++) {
+  for (let x = 0; x < width; x++) {
+    if (out[idx(width, x, y) + 3] === 0) transparent++
+  }
 }
 console.log(
-  `Wrote ${path.relative(projectRoot, outputPath)} (${Math.round((transparent / (width * height)) * 100)}% transparent pixels)`,
+  `Wrote ${path.relative(projectRoot, outputPath)} (${Math.round((transparent / total) * 100)}% transparent)`,
 )
