@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import type { User } from '../lib/auth'
 import { navLinks, site } from '../data/site'
 import { Logo } from './Logo'
 
 interface NavbarProps {
   pathname: string
   onNavigate: (path: string) => void
+  currentUser: User | null
+  onSignOut: () => void
 }
 
-export function Navbar({ pathname, onNavigate }: NavbarProps) {
+export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuMounted, setMenuMounted] = useState(false)
   const [menuActive, setMenuActive] = useState(false)
@@ -80,21 +83,43 @@ export function Navbar({ pathname, onNavigate }: NavbarProps) {
               </div>
 
               <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation links">
-                {navLinks.map((link) => (
+                {currentUser && (
+                  <p className="mb-2 px-4 text-sm font-medium text-brand-300">
+                    Signed in as {currentUser.username}
+                  </p>
+                )}
+                {navLinks.map((link) => {
+                  const label =
+                    link.path === '/join' && currentUser ? 'Account' : link.label
+
+                  return (
+                    <button
+                      key={link.path}
+                      type="button"
+                      onClick={() => handleNavigate(link.path)}
+                      aria-current={pathname === link.path ? 'page' : undefined}
+                      className={`touch-target rounded-xl px-4 py-3.5 text-left text-base font-medium transition-colors ${
+                        pathname === link.path
+                          ? 'bg-brand-900/50 text-brand-200'
+                          : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+                {currentUser && (
                   <button
-                    key={link.path}
                     type="button"
-                    onClick={() => handleNavigate(link.path)}
-                    aria-current={pathname === link.path ? 'page' : undefined}
-                    className={`touch-target rounded-xl px-4 py-3.5 text-left text-base font-medium transition-colors ${
-                      pathname === link.path
-                        ? 'bg-brand-900/50 text-brand-200'
-                        : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                    }`}
+                    onClick={() => {
+                      onSignOut()
+                      setMenuOpen(false)
+                    }}
+                    className="touch-target mt-4 rounded-xl border border-white/10 px-4 py-3.5 text-left text-base font-medium text-slate-400 hover:bg-white/10 hover:text-white"
                   >
-                    {link.label}
+                    Sign out
                   </button>
-                ))}
+                )}
               </nav>
             </div>
           </>,
@@ -119,21 +144,43 @@ export function Navbar({ pathname, onNavigate }: NavbarProps) {
           </button>
 
           <div className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link) => (
-              <button
-                key={link.path}
-                type="button"
-                onClick={() => handleNavigate(link.path)}
-                aria-current={pathname === link.path ? 'page' : undefined}
-                className={`touch-target rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  pathname === link.path
-                    ? 'bg-brand-900/50 text-brand-200'
-                    : 'text-slate-300 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {link.label}
-              </button>
-            ))}
+            {navLinks.map((link) => {
+              const label =
+                link.path === '/join' && currentUser ? 'Account' : link.label
+
+              return (
+                <button
+                  key={link.path}
+                  type="button"
+                  onClick={() => handleNavigate(link.path)}
+                  aria-current={pathname === link.path ? 'page' : undefined}
+                  className={`touch-target rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    pathname === link.path
+                      ? 'bg-brand-900/50 text-brand-200'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+            {currentUser && (
+              <>
+                <span className="mx-1 hidden text-slate-600 lg:inline" aria-hidden="true">
+                  |
+                </span>
+                <span className="hidden text-sm text-brand-300 lg:inline">
+                  Hi, {currentUser.username}
+                </span>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  className="touch-target rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white"
+                >
+                  Sign out
+                </button>
+              </>
+            )}
           </div>
 
           <button

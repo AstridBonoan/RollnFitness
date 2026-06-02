@@ -9,6 +9,7 @@ import { NutritionPage } from './components/pages/NutritionPage'
 import { ChallengesPage } from './components/pages/ChallengesPage'
 import { SportsPassPage } from './components/pages/SportsPassPage'
 import { JoinPage } from './components/pages/JoinPage'
+import { clearSession, getCurrentUser, type User } from './lib/auth'
 import './index.css'
 
 function getRoute() {
@@ -18,6 +19,9 @@ function getRoute() {
 
 function App() {
   const [pathname, setPathname] = useState(getRoute)
+  const [currentUser, setCurrentUser] = useState<User | null>(getCurrentUser)
+
+  const refreshAuth = () => setCurrentUser(getCurrentUser())
 
   useEffect(() => {
     const handleHashChange = () => setPathname(getRoute())
@@ -33,10 +37,21 @@ function App() {
     }
   }
 
+  const handleSignOut = () => {
+    clearSession()
+    refreshAuth()
+    navigateTo('/')
+  }
+
   return (
     <div className="min-h-screen bg-navy-950">
       <SkipLink />
-      <Navbar pathname={pathname} onNavigate={navigateTo} />
+      <Navbar
+        pathname={pathname}
+        onNavigate={navigateTo}
+        currentUser={currentUser}
+        onSignOut={handleSignOut}
+      />
       <main id="main-content">
         {pathname === '/' && <HomePage onNavigate={navigateTo} />}
         {pathname === '/workouts' && <WorkoutsPage />}
@@ -44,7 +59,9 @@ function App() {
         {pathname === '/nutrition' && <NutritionPage />}
         {pathname === '/challenges' && <ChallengesPage />}
         {pathname === '/sports-pass' && <SportsPassPage onNavigate={navigateTo} />}
-        {pathname === '/join' && <JoinPage />}
+        {pathname === '/join' && (
+          <JoinPage onNavigate={navigateTo} onAuthChange={refreshAuth} />
+        )}
       </main>
       <Footer onNavigate={navigateTo} />
     </div>
