@@ -97,7 +97,12 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
                       key={link.path}
                       type="button"
                       onClick={() => handleNavigate(link.path)}
-                      aria-current={pathname === link.path ? 'page' : undefined}
+                      aria-current={
+                    pathname === link.path ||
+                    (link.path === '/workouts' && pathname.startsWith('/workouts/'))
+                      ? 'page'
+                      : undefined
+                  }
                       className={`touch-target rounded-xl px-4 py-3.5 text-left text-base font-medium transition-colors ${
                         pathname === link.path
                           ? 'bg-brand-900/50 text-brand-200'
@@ -153,7 +158,12 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
                   key={link.path}
                   type="button"
                   onClick={() => handleNavigate(link.path)}
-                  aria-current={pathname === link.path ? 'page' : undefined}
+                  aria-current={
+                    pathname === link.path ||
+                    (link.path === '/workouts' && pathname.startsWith('/workouts/'))
+                      ? 'page'
+                      : undefined
+                  }
                   className={`touch-target rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     pathname === link.path
                       ? 'bg-brand-900/50 text-brand-200'

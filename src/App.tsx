@@ -4,6 +4,8 @@ import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { HomePage } from './components/pages/HomePage'
 import { WorkoutsPage } from './components/pages/WorkoutsPage'
+import { WorkoutDetailPage } from './components/pages/WorkoutDetailPage'
+import { parseWorkoutRoute } from './lib/workouts'
 import { ProgressPage } from './components/pages/ProgressPage'
 import { NutritionPage } from './components/pages/NutritionPage'
 import { ChallengesPage } from './components/pages/ChallengesPage'
@@ -43,6 +45,8 @@ function App() {
     navigateTo('/')
   }
 
+  const workoutId = parseWorkoutRoute(pathname)
+
   return (
     <div className="dashboard-shell">
       <SkipLink />
@@ -56,7 +60,8 @@ function App() {
         {pathname === '/' && (
           <HomePage onNavigate={navigateTo} currentUser={currentUser} />
         )}
-        {pathname === '/workouts' && <WorkoutsPage />}
+        {pathname === '/workouts' && <WorkoutsPage onNavigate={navigateTo} />}
+        {workoutId && <WorkoutDetailPage workoutId={workoutId} onNavigate={navigateTo} />}
         {pathname === '/progress' && <ProgressPage />}
         {pathname === '/nutrition' && <NutritionPage />}
         {pathname === '/challenges' && <ChallengesPage />}
