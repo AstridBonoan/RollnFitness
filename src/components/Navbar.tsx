@@ -27,7 +27,7 @@ export function Navbar({ pathname, onNavigate }: NavbarProps) {
           className="touch-target rounded-lg"
           aria-label={`${site.fullName} home`}
         >
-          <Logo variant="compact" />
+          <Logo variant="compact" glow />
         </button>
 
         <div className="hidden items-center gap-1 md:flex">

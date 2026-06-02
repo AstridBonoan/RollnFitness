@@ -2,6 +2,7 @@ import { site } from '../data/site'
 
 interface LogoProps {
   variant?: 'compact' | 'full'
+  glow?: boolean
   className?: string
 }
 
@@ -13,7 +14,7 @@ const logoFilter =
 const logoFilterCompact =
   'brightness(1.06) contrast(1.06) saturate(1.1) drop-shadow(0 0 10px rgba(34,211,238,0.3))'
 
-export function Logo({ variant = 'compact', className = '' }: LogoProps) {
+export function Logo({ variant = 'compact', glow = false, className = '' }: LogoProps) {
   if (variant === 'full') {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
@@ -38,13 +39,21 @@ export function Logo({ variant = 'compact', className = '' }: LogoProps) {
 
   return (
     <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`}>
-      <img
-        src={logoSrc}
-        alt=""
-        aria-hidden="true"
-        className="h-10 w-auto shrink-0 bg-transparent object-contain sm:h-12"
-        style={{ filter: logoFilterCompact }}
-      />
+      <div className={`relative shrink-0 ${glow ? 'px-1 py-0.5' : ''}`}>
+        {glow && (
+          <div
+            className="pointer-events-none absolute inset-0 scale-125 rounded-full bg-brand-400/20 blur-xl"
+            aria-hidden="true"
+          />
+        )}
+        <img
+          src={logoSrc}
+          alt=""
+          aria-hidden="true"
+          className={`relative h-10 w-auto bg-transparent object-contain sm:h-12 ${glow ? '' : 'shrink-0'}`}
+          style={{ filter: glow ? logoFilter : logoFilterCompact }}
+        />
+      </div>
       <div className="min-w-0 text-left leading-tight">
         <p className="truncate font-display text-base font-bold text-white sm:text-lg">
           RollnFitness
