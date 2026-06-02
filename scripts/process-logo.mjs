@@ -1,4 +1,4 @@
-// Removes grey checkerboard from the Rolln logo without eating metallic edges.
+// Removes grey checkerboard and exports logo for the warm dark site background.
 // Run with: npm run logo:process
 
 import sharp from 'sharp'
@@ -10,9 +10,11 @@ const projectRoot = path.resolve(__dirname, '..')
 const sourcePath = path.join(projectRoot, 'public', 'rolln-logo-source.png')
 const outputPath = path.join(projectRoot, 'public', 'rolln-logo.png')
 
+/** Matches tailwind navy-950 / site background */
+const SITE_BG = { r: 15, g: 8, b: 5 }
+
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
 
-/** Grey checkerboard tiles from the Gemini export (dark ~38, light ~91). */
 function isBackgroundPixel(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
   if (sat > 22) return false
@@ -29,7 +31,6 @@ function isLogoCore(r, g, b) {
   const l = luma(r, g, b)
 
   if (sat <= 12 && l >= 26 && l <= 108) return false
-
   if (sat > 22) return true
   if (r > g + 12 && r > b + 8) return true
   if (l < 65) return true
@@ -86,10 +87,10 @@ for (let y = 0; y < height; y++) {
     const b = data[p + 2]
 
     if (isBackgroundPixel(r, g, b) && !logoMask[i]) {
-      out[p] = 0
-      out[p + 1] = 0
-      out[p + 2] = 0
-      out[p + 3] = 0
+      out[p] = SITE_BG.r
+      out[p + 1] = SITE_BG.g
+      out[p + 2] = SITE_BG.b
+      out[p + 3] = 255
       continue
     }
 
@@ -103,22 +104,15 @@ for (let y = 0; y < height; y++) {
 await sharp(out, {
   raw: { width, height, channels: 4 },
 })
-  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+  .trim({ background: SITE_BG, threshold: 2 })
   .extend({
     top: 10,
     bottom: 8,
     left: 8,
     right: 8,
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
+    background: SITE_BG,
   })
   .png({ compressionLevel: 9 })
   .toFile(outputPath)
 
-const { data: check } = await sharp(outputPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-let transparent = 0
-for (let i = 3; i < check.length; i += 4) {
-  if (check[i] === 0) transparent++
-}
-console.log(
-  `Wrote ${path.relative(projectRoot, outputPath)} (${info.width}x${info.height}, ${Math.round((transparent / (width * height)) * 100)}% transparent)`,
-)
+console.log(`Wrote ${path.relative(projectRoot, outputPath)}`)
