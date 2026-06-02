@@ -6,7 +6,7 @@ interface LogoProps {
   className?: string
 }
 
-const logoSrc = `${import.meta.env.BASE_URL}rolln-logo.png?v=octane-figure`
+const logoSrc = `${import.meta.env.BASE_URL}rolln-logo.png?v=transparent`
 
 const logoFilter =
   'brightness(1.04) contrast(1.1) saturate(1.2) drop-shadow(0 0 20px rgba(0, 242, 255, 0.35)) drop-shadow(0 0 40px rgba(57, 255, 20, 0.12))'
