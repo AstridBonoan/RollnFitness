@@ -21,7 +21,7 @@ export function Logo({ variant = 'compact', glow = false, className = '' }: Logo
   if (variant === 'full') {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-md pt-2">
           <div
             className="pointer-events-none absolute inset-0 scale-110 rounded-full bg-brand-400/12 blur-2xl"
             aria-hidden="true"
@@ -29,7 +29,7 @@ export function Logo({ variant = 'compact', glow = false, className = '' }: Logo
           <img
             src={logoSrc}
             alt={site.logoAlt}
-            className="relative h-auto w-full bg-transparent object-contain"
+            className="relative h-auto w-full bg-transparent object-contain object-center"
             style={{ filter: logoFilter }}
           />
         </div>
@@ -47,7 +47,7 @@ export function Logo({ variant = 'compact', glow = false, className = '' }: Logo
           src={logoSrc}
           alt=""
           aria-hidden="true"
-          className="relative h-10 w-auto shrink-0 bg-transparent object-contain sm:h-12"
+          className="relative h-10 w-auto shrink-0 bg-transparent object-contain object-left sm:h-12"
           style={{ filter: glow ? logoFilterNav : logoFilterCompact }}
         />
       </div>

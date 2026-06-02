@@ -13,9 +13,9 @@ interface HomePageProps {
 export function HomePage({ onNavigate, currentUser }: HomePageProps) {
   return (
     <>
-      <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8">
+      <section className="relative px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8">
         <div
-          className="pointer-events-none absolute inset-0 opacity-50"
+          className="pointer-events-none absolute inset-0 overflow-hidden opacity-50"
           aria-hidden="true"
           style={{
             backgroundImage: `radial-gradient(circle at 75% 45%, rgba(34,211,238,0.18) 0%, transparent 45%),

@@ -101,10 +101,20 @@ for (let y = 0; y < height; y++) {
   }
 }
 
+const PAD_TOP = 14
+const PAD_SIDE = 6
+
 await sharp(out, {
   raw: { width, height, channels: 4 },
 })
   .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 2 })
+  .extend({
+    top: PAD_TOP,
+    bottom: PAD_SIDE,
+    left: PAD_SIDE,
+    right: PAD_SIDE,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
   .png({ compressionLevel: 9 })
   .toFile(outputPath)
 
