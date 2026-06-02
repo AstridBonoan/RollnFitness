@@ -52,10 +52,7 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
                 designed for wheelchair users, adaptive athletes, and everyone in between.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button size="lg" onClick={() => onNavigate('/join')}>
-                  Get early access
-                </Button>
-                <Button variant="secondary" size="lg" onClick={() => onNavigate('/workouts')}>
+                <Button size="lg" onClick={() => onNavigate('/workouts')}>
                   Browse workouts
                 </Button>
               </div>
