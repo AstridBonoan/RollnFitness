@@ -9,10 +9,10 @@ interface LogoProps {
 const logoSrc = `${import.meta.env.BASE_URL}rolln-logo.png`
 
 const logoFilter =
-  'brightness(1.08) contrast(1.08) saturate(1.15) drop-shadow(0 0 18px rgba(34,211,238,0.35)) drop-shadow(0 4px 16px rgba(34,211,238,0.2))'
+  'brightness(1.06) contrast(1.06) saturate(1.12) drop-shadow(0 0 14px rgba(34,211,238,0.28)) drop-shadow(0 4px 12px rgba(34,211,238,0.16))'
 
 const logoFilterNav =
-  'brightness(1.05) contrast(1.05) saturate(1.1) drop-shadow(0 0 12px rgba(34,211,238,0.28))'
+  'brightness(1.04) contrast(1.04) saturate(1.08) drop-shadow(0 0 10px rgba(34,211,238,0.24))'
 
 const logoFilterCompact =
   'brightness(1.04) contrast(1.04) saturate(1.05) drop-shadow(0 0 6px rgba(34,211,238,0.15))'
@@ -23,7 +23,7 @@ export function Logo({ variant = 'compact', glow = false, className = '' }: Logo
       <div className={`flex flex-col items-center text-center ${className}`}>
         <div className="relative w-full max-w-md">
           <div
-            className="pointer-events-none absolute inset-0 scale-110 rounded-full bg-brand-400/15 blur-3xl"
+            className="pointer-events-none absolute inset-0 scale-110 rounded-full bg-brand-400/12 blur-2xl"
             aria-hidden="true"
           />
           <img
