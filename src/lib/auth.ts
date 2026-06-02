@@ -10,6 +10,13 @@ export interface User {
 const USERS_KEY = 'rollnfitness-users'
 const SESSION_KEY = 'rollnfitness-session'
 
+/** Reference credentials for the Phase 1 demo — type these into the form manually. */
+export const DEMO_CREDENTIALS = {
+  email: 'demo@rollnfitness.com',
+  username: 'DemoUser',
+  password: 'demo12345',
+} as const
+
 export function findUserByLogin(login: string, password: string): User | null {
   const id = login.trim().toLowerCase()
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  DEMO_CREDENTIALS,
   findUserByLogin,
   getCurrentUser,
   interestLabel,
@@ -479,6 +480,45 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
             )}
           </p>
         </form>
+
+        <aside
+          className="mt-6 rounded-xl border border-white/10 bg-navy-950/80 px-5 py-4 sm:px-6"
+          aria-label="Demo account credentials to type in"
+        >
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Demo credentials
+          </p>
+          <p className="mt-1 text-sm text-slate-400">
+            {mode === 'sign-up'
+              ? 'Type these into the form above to create your demo account.'
+              : 'After sign-up, sign in with your username or email and password.'}
+          </p>
+          <dl className="mt-3 space-y-2 font-mono text-sm">
+            {mode === 'sign-up' ? (
+              <>
+                <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                  <dt className="text-slate-500">Email</dt>
+                  <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.email}</dd>
+                </div>
+                <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                  <dt className="text-slate-500">Username</dt>
+                  <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.username}</dd>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                <dt className="text-slate-500">Username or email</dt>
+                <dd className="font-semibold text-brand-200">
+                  {DEMO_CREDENTIALS.username} or {DEMO_CREDENTIALS.email}
+                </dd>
+              </div>
+            )}
+            <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+              <dt className="text-slate-500">Password</dt>
+              <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.password}</dd>
+            </div>
+          </dl>
+        </aside>
       </div>
     </PageShell>
   )
