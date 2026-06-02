@@ -6,10 +6,10 @@ interface LogoProps {
 }
 
 /** Intrinsic size of rolln-logo-mark.png (matches process-mark.mjs output). */
-const MARK_WIDTH = 392
-const MARK_HEIGHT = 176
+const MARK_WIDTH = 520
+const MARK_HEIGHT = 251
 
-const cache = 'mark-v4'
+const cache = 'mark-v5'
 const base = import.meta.env.BASE_URL
 const mark1x = `${base}rolln-logo-mark.png?v=${cache}`
 const mark2x = `${base}rolln-logo-mark@2x.png?v=${cache}`
@@ -68,7 +68,7 @@ export function Logo({ variant = 'compact', className = '' }: LogoProps) {
 
   return (
     <div className={`flex min-w-0 items-center gap-2.5 sm:gap-3 ${className}`}>
-      <LogoMark className="h-12 w-auto max-w-[8.75rem] shrink-0 sm:h-14 sm:max-w-[10.5rem]" />
+      <LogoMark className="h-11 w-auto max-w-[5.5rem] shrink-0 sm:h-12 sm:max-w-[6.25rem]" />
       <BrandText />
       <span className="sr-only">{site.logoAlt}</span>
     </div>

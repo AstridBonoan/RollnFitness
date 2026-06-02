@@ -1,133 +1,159 @@
-// Builds crisp transparent emblem marks from rolln-logo-mark-source.png
+// Smooth-edge transparent marks from rolln-logo-mark-source.png or rolln-logo-source.png
 // Run with: npm run logo:mark
 
 import sharp from 'sharp'
+import { access } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
-const sourcePath = path.join(projectRoot, 'public', 'rolln-logo-mark-source.png')
+const markSourcePath = path.join(projectRoot, 'public', 'rolln-logo-mark-source.png')
+const fullSourcePath = path.join(projectRoot, 'public', 'rolln-logo-source.png')
 const markPath = path.join(projectRoot, 'public', 'rolln-logo-mark.png')
 const mark2xPath = path.join(projectRoot, 'public', 'rolln-logo-mark@2x.png')
 
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
+const sat = (r, g, b) => Math.max(r, g, b) - Math.min(r, g, b)
 
-function isWarmMetal(r, g, b) {
-  return r > 108 && g > 78 && b < 98 && r > b + 14 && r >= g - 20
+function smoothstep(edge0, edge1, x) {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)))
+  return t * t * (3 - 2 * t)
 }
 
-function isCyanEnergy(r, g, b) {
-  return b > 105 && b > r + 28
-}
-
-function isVitalityGreen(r, g, b) {
-  return g > 125 && g > r + 32 && g > b + 10
-}
-
-function isCircuitGold(r, g, b) {
-  const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  return r > 155 && g > 105 && sat > 38
-}
-
-function isTealGreenGradient(r, g, b) {
-  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+function isFlatBackground(r, g, b) {
+  const s = sat(r, g, b)
   const l = luma(r, g, b)
-  if (sat < 25 || l < 40) return false
-  if (b > 70 && g > 60) return true
-  if (g > 80 && r < 120) return true
+  if (s <= 12 && l >= 88 && l <= 220) return true
+  if (s <= 14 && l >= 42 && l <= 82) return true
+  if (s <= 28 && l <= 52) return true
   return false
 }
 
-function isDarkBackdrop(r, g, b, a = 255) {
-  const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  const l = luma(r, g, b)
-  if (a < 12) return true
-  if (l <= 48 && sat <= 40) return true
-  if (r < 45 && g < 55 && b < 55 && g >= r - 8 && b >= r - 10) return true
-  return false
-}
-
-function isLogoPixel(r, g, b, a = 255) {
-  if (isDarkBackdrop(r, g, b, a)) return false
-
-  if (
-    isWarmMetal(r, g, b) ||
-    isCyanEnergy(r, g, b) ||
-    isVitalityGreen(r, g, b) ||
-    isCircuitGold(r, g, b) ||
-    isTealGreenGradient(r, g, b)
-  ) {
-    return true
+function sampleBackground(data, width, height) {
+  const pts = [
+    [2, 2],
+    [width - 3, 2],
+    [2, height - 3],
+    [width - 3, height - 3],
+    [width >> 1, 2],
+    [2, height >> 1],
+  ]
+  let r = 0
+  let g = 0
+  let b = 0
+  let n = 0
+  for (const [x, y] of pts) {
+    const p = (y * width + x) * 4
+    const pr = data[p]
+    const pg = data[p + 1]
+    const pb = data[p + 2]
+    if (isFlatBackground(pr, pg, pb)) {
+      r += pr
+      g += pg
+      b += pb
+      n++
+    }
   }
+  if (!n) return [19, 36, 35]
+  return [Math.round(r / n), Math.round(g / n), Math.round(b / n)]
+}
 
-  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+function colorDistance(r, g, b, bg) {
+  const dr = r - bg[0]
+  const dg = g - bg[1]
+  const db = b - bg[2]
+  return Math.sqrt(dr * dr + dg * dg + db * db)
+}
+
+function alphaForPixel(r, g, b, bg) {
+  if (isFlatBackground(r, g, b)) return 0
+
+  const s = sat(r, g, b)
   const l = luma(r, g, b)
+  const dist = colorDistance(r, g, b, bg)
 
-  if (sat > 55 && l > 35) return true
-  if (l > 175 && sat > 28) return true
+  let a = smoothstep(10, 48, dist)
 
-  return false
+  if (s > 70 && l > 55) a = Math.max(a, 0.92)
+  if (s > 100 || l > 130) a = 1
+  if (l > 175 && s > 25) a = 1
+
+  return a
+}
+
+function defringe(r, g, b, a, bg) {
+  if (a <= 0) return [0, 0, 0, 0]
+  if (a >= 1) return [r, g, b, 255]
+
+  const f = a
+  const inv = 1 - f
+  const nr = Math.round(Math.min(255, Math.max(0, (r - bg[0] * inv) / f)))
+  const ng = Math.round(Math.min(255, Math.max(0, (g - bg[1] * inv) / f)))
+  const nb = Math.round(Math.min(255, Math.max(0, (b - bg[2] * inv) / f)))
+  return [nr, ng, nb, Math.round(a * 255)]
 }
 
 function idx(width, x, y) {
   return (y * width + x) * 4
 }
 
-function buildLogoMask(data, width, height) {
-  const core = new Uint8Array(width * height)
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const p = idx(width, x, y)
-      if (isLogoPixel(data[p], data[p + 1], data[p + 2], data[p + 3])) {
-        core[y * width + x] = 1
-      }
-    }
-  }
-
-  const mask = new Uint8Array(width * height)
-  const radius = 2
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      if (!core[y * width + x]) continue
-      for (let dy = -radius; dy <= radius; dy++) {
-        for (let dx = -radius; dx <= radius; dx++) {
-          const nx = x + dx
-          const ny = y + dy
-          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue
-          mask[ny * width + nx] = 1
-        }
-      }
-    }
-  }
-  return mask
-}
-
-function rgbaBuffer(data, width, height, logoMask) {
+function buildRgba(data, width, height) {
+  const bg = sampleBackground(data, width, height)
   const out = Buffer.alloc(data.length)
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const p = idx(width, x, y)
-      const r = data[p]
-      const g = data[p + 1]
-      const b = data[p + 2]
-
-      if (!logoMask[y * width + x] || !isLogoPixel(r, g, b, data[p + 3])) {
-        out[p] = 0
-        out[p + 1] = 0
-        out[p + 2] = 0
-        out[p + 3] = 0
-        continue
-      }
-
+      const a = alphaForPixel(data[p], data[p + 1], data[p + 2], bg)
+      const [r, g, b, alpha] = defringe(data[p], data[p + 1], data[p + 2], a, bg)
       out[p] = r
       out[p + 1] = g
       out[p + 2] = b
-      out[p + 3] = 255
+      out[p + 3] = alpha
     }
   }
+
   return out
 }
+
+function findEmblemBottom(data, width, height) {
+  const rowCounts = new Uint32Array(height)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[idx(width, x, y) + 3] > 8) rowCounts[y]++
+    }
+  }
+
+  let textBandStart = height
+  for (let y = Math.floor(height * 0.58); y < height; y++) {
+    if (rowCounts[y] > width * 0.14) textBandStart = y
+  }
+
+  let emblemBottom = Math.floor(height * 0.74)
+  for (let y = textBandStart - 1; y >= Math.floor(height * 0.45); y--) {
+    if (rowCounts[y] < width * 0.035) {
+      emblemBottom = y
+      break
+    }
+  }
+
+  return Math.min(Math.floor(height * 0.76), Math.max(Math.floor(height * 0.68), emblemBottom + 4))
+}
+
+async function pickSourcePath() {
+  try {
+    await access(markSourcePath)
+    const meta = await sharp(markSourcePath).metadata()
+    if ((meta.width ?? 0) >= 900) return markSourcePath
+  } catch {
+    /* use full source */
+  }
+  return fullSourcePath
+}
+
+const sourcePath = await pickSourcePath()
+const hasFullText = sourcePath === fullSourcePath
 
 const { data, info } = await sharp(sourcePath)
   .ensureAlpha()
@@ -135,19 +161,36 @@ const { data, info } = await sharp(sourcePath)
   .toBuffer({ resolveWithObject: true })
 
 const { width, height } = info
-const logoMask = buildLogoMask(data, width, height)
-const out = rgbaBuffer(data, width, height, logoMask)
+let rgba = buildRgba(data, width, height)
 
-const mark1x = await sharp(out, { raw: { width, height, channels: 4 } })
-  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+let cropHeight = height
+if (hasFullText) {
+  cropHeight = findEmblemBottom(rgba, width, height)
+}
+
+let pipeline = sharp(rgba, { raw: { width, height, channels: 4 } })
+if (cropHeight < height) {
+  pipeline = pipeline.extract({ left: 0, top: 0, width, height: cropHeight })
+}
+const cropped = await pipeline.png().toBuffer()
+
+const trimmed = await sharp(cropped)
+  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 2 })
   .extend({
-    top: 4,
-    bottom: 4,
-    left: 4,
-    right: 4,
+    top: 6,
+    bottom: 6,
+    left: 6,
+    right: 6,
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   })
-  .png({ compressionLevel: 6, adaptiveFiltering: true })
+  .toBuffer()
+
+const trimmedMeta = await sharp(trimmed).metadata()
+const targetWidth = Math.min(520, trimmedMeta.width ?? 520)
+
+const mark1x = await sharp(trimmed)
+  .resize({ width: targetWidth, kernel: sharp.kernel.lanczos3 })
+  .png({ compressionLevel: 6, adaptiveFiltering: false })
   .toBuffer()
 
 const meta = await sharp(mark1x).metadata()
@@ -155,15 +198,24 @@ await sharp(mark1x).toFile(markPath)
 
 await sharp(mark1x)
   .resize({
-    width: meta.width * 2,
-    height: meta.height * 2,
+    width: (meta.width ?? targetWidth) * 2,
     kernel: sharp.kernel.lanczos3,
   })
-  .sharpen({ sigma: 0.65, m1: 0.75, m2: 0.25, x1: 2, y2: 8, y3: 16 })
-  .png({ compressionLevel: 6, adaptiveFiltering: true })
+  .png({ compressionLevel: 6, adaptiveFiltering: false })
   .toFile(mark2xPath)
 
-console.log(`Wrote ${path.relative(projectRoot, markPath)} (${meta.width}x${meta.height})`)
+const { data: outData, info: outInfo } = await sharp(mark1x)
+  .raw()
+  .toBuffer({ resolveWithObject: true })
+let semi = 0
+for (let i = 3; i < outData.length; i += 4) {
+  if (outData[i] > 0 && outData[i] < 255) semi++
+}
+
+console.log(`Source: ${path.relative(projectRoot, sourcePath)}`)
 console.log(
-  `Wrote ${path.relative(projectRoot, mark2xPath)} (${meta.width * 2}x${meta.height * 2})`,
+  `Wrote ${path.relative(projectRoot, markPath)} (${meta.width}x${meta.height}, ${Math.round((semi / (outInfo.width * outInfo.height)) * 100)}% soft edge)`,
+)
+console.log(
+  `Wrote ${path.relative(projectRoot, mark2xPath)} (${(meta.width ?? 0) * 2}x${(meta.height ?? 0) * 2})`,
 )
