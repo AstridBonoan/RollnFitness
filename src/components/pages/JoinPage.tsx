@@ -127,7 +127,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
     if (user.onboarded) {
       setMobility(user.mobility ?? '')
       setInterest(user.interest ?? '')
-      setStep('complete')
+      onNavigate('/')
       return
     }
 
@@ -159,8 +159,8 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
       return
     }
 
-    setStep('complete')
     onAuthChange()
+    onNavigate('/')
   }
 
   if (step === 'complete') {
@@ -273,10 +273,12 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   }
 
   if (step === 'onboarding') {
+    const displayName = getCurrentUser()?.username ?? form.username
+
     return (
       <PageShell
-        title="Tell us how you move"
-        description="Step 2 of 3 — this helps us recommend the right adaptive workouts for you."
+        title={`Welcome, ${displayName}!`}
+        description="Step 2 of 3 — tell us how you move so we can recommend the right adaptive workouts for you."
       >
         <div className="mx-auto max-w-lg">
           <SignUpProgress step={2} />

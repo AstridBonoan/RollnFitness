@@ -85,7 +85,7 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
               <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4" aria-label="Mobile navigation links">
                 {currentUser && (
                   <p className="mb-2 px-4 text-sm font-medium text-brand-300">
-                    Signed in as {currentUser.username}
+                    Welcome, {currentUser.username}
                   </p>
                 )}
                 {navLinks.map((link) => {
@@ -170,7 +170,7 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
                   |
                 </span>
                 <span className="hidden text-sm text-brand-300 lg:inline">
-                  Hi, {currentUser.username}
+                  Welcome, {currentUser.username}
                 </span>
                 <button
                   type="button"

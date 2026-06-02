@@ -53,7 +53,9 @@ function App() {
         onSignOut={handleSignOut}
       />
       <main id="main-content">
-        {pathname === '/' && <HomePage onNavigate={navigateTo} />}
+        {pathname === '/' && (
+          <HomePage onNavigate={navigateTo} currentUser={currentUser} />
+        )}
         {pathname === '/workouts' && <WorkoutsPage />}
         {pathname === '/progress' && <ProgressPage />}
         {pathname === '/nutrition' && <NutritionPage />}

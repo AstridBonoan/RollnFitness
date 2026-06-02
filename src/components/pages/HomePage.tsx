@@ -1,14 +1,16 @@
 import { motion } from 'framer-motion'
 import { coreFeatures, mobilityLevels, site } from '../../data/site'
+import type { User } from '../../lib/auth'
 import { Logo } from '../Logo'
 import { Button } from '../ui/Button'
 import { SectionHeader } from '../ui/SectionHeader'
 
 interface HomePageProps {
   onNavigate: (path: string) => void
+  currentUser: User | null
 }
 
-export function HomePage({ onNavigate }: HomePageProps) {
+export function HomePage({ onNavigate, currentUser }: HomePageProps) {
   return (
     <>
       <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8">
@@ -33,8 +35,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 {site.fullName}
               </p>
               <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Move with confidence.{' '}
-                <span className="text-brand-400">Train your way.</span>
+                {currentUser ? (
+                  <>
+                    Welcome,{' '}
+                    <span className="text-brand-400">{currentUser.username}</span>!
+                  </>
+                ) : (
+                  <>
+                    Move with confidence.{' '}
+                    <span className="text-brand-400">Train your way.</span>
+                  </>
+                )}
               </h1>
               <p className="mt-6 text-lg leading-relaxed text-slate-300 sm:text-xl">
                 {site.description} Build strength, improve mobility, and stay consistent with workouts
