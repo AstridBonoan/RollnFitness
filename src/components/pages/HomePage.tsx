@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { coreFeatures, mobilityLevels, site } from '../../data/site'
+import { Logo } from '../Logo'
 import { Button } from '../ui/Button'
 import { SectionHeader } from '../ui/SectionHeader'
 
@@ -15,19 +16,20 @@ export function HomePage({ onNavigate }: HomePageProps) {
           className="pointer-events-none absolute inset-0 opacity-40"
           aria-hidden="true"
           style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(16,185,129,0.15) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(249,115,22,0.1) 0%, transparent 40%)`,
+            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(8,145,178,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(99,102,241,0.1) 0%, transparent 40%)`,
           }}
         />
         <div className="relative mx-auto max-w-6xl">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="max-w-3xl"
+            className="max-w-xl"
           >
             <p className="mb-4 inline-flex items-center rounded-full bg-brand-100 px-4 py-1.5 text-sm font-semibold text-brand-800 dark:bg-brand-900/40 dark:text-brand-200">
-              Adaptive fitness for every body
+              {site.fullName}
             </p>
             <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
               Move with confidence.{' '}
@@ -46,6 +48,16 @@ export function HomePage({ onNavigate }: HomePageProps) {
               </Button>
             </div>
           </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="flex justify-center lg:justify-end"
+          >
+            <Logo variant="full" className="max-w-sm lg:max-w-md" />
+          </motion.div>
+          </div>
 
           <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {mobilityLevels.map((level, i) => (

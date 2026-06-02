@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { navLinks, site } from '../data/site'
+import { Logo } from './Logo'
 
 interface NavbarProps {
   isDark: boolean
@@ -25,13 +26,10 @@ export function Navbar({ isDark, onThemeToggle, pathname, onNavigate }: NavbarPr
         <button
           type="button"
           onClick={() => handleNavigate('/')}
-          className="touch-target flex items-center gap-2 rounded-lg font-display text-xl font-bold text-brand-700 dark:text-brand-400"
-          aria-label={`${site.name} home`}
+          className="touch-target rounded-lg"
+          aria-label={`${site.fullName} home`}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-lg text-white" aria-hidden="true">
-            R
-          </span>
-          <span className="hidden sm:inline">{site.name}</span>
+          <Logo variant="compact" />
         </button>
 
         <div className="hidden items-center gap-1 md:flex">

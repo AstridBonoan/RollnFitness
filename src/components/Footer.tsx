@@ -1,4 +1,5 @@
 import { navLinks, site } from '../data/site'
+import { Logo } from './Logo'
 
 interface FooterProps {
   onNavigate: (path: string) => void
@@ -10,11 +11,12 @@ export function Footer({ onNavigate }: FooterProps) {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <p className="font-display text-xl font-bold text-brand-700 dark:text-brand-400">
-              {site.name}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            <Logo variant="compact" className="mb-4" />
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
               {site.description} Making fitness accessible to every body.
+            </p>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-brand-700 dark:text-brand-300">
+              {site.parentTagline}
             </p>
           </div>
 
@@ -57,7 +59,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
         <div className="mt-10 flex flex-col gap-4 border-t border-slate-200 pt-8 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            &copy; {new Date().getFullYear()} {site.name}. All rights reserved.
+            &copy; {new Date().getFullYear()} {site.fullName}. All rights reserved.
           </p>
           <p className="text-sm text-slate-500 dark:text-slate-500">
             Phase 1 — Mobile-first web platform
