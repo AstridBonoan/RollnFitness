@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
 import {
-  DEMO_CREDENTIALS,
-  ensureDemoUser,
   findUserByLogin,
   getCurrentUser,
   interestLabel,
-  isDemoSignIn,
   loadUsers,
   mobilityLabel,
   saveUsers,
@@ -46,10 +43,6 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   const [form, setForm] = useState({ email: '', username: '', login: '', password: '' })
 
   useEffect(() => {
-    ensureDemoUser()
-  }, [])
-
-  useEffect(() => {
     const user = getCurrentUser()
     if (!user) return
 
@@ -88,31 +81,6 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
     setStep(user.mobility ? 'goals' : 'onboarding')
   }
 
-  const fillDemoCredentials = () => {
-    if (mode === 'sign-in') {
-      setForm((f) => ({
-        ...f,
-        login: DEMO_CREDENTIALS.username,
-        password: DEMO_CREDENTIALS.password,
-      }))
-    } else {
-      setForm({
-        email: DEMO_CREDENTIALS.email,
-        username: DEMO_CREDENTIALS.username,
-        login: '',
-        password: DEMO_CREDENTIALS.password,
-      })
-    }
-    setError('')
-  }
-
-  const handleDemoSignUp = () => {
-    const demo = ensureDemoUser()
-    setError('')
-    setMode('sign-up')
-    beginOnboarding(demo)
-  }
-
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -144,10 +112,6 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-
-    if (isDemoSignIn(form.login, form.password)) {
-      ensureDemoUser()
-    }
 
     const user = findUserByLogin(form.login, form.password)
     if (!user) {
@@ -373,51 +337,6 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
       <div className="mx-auto max-w-lg">
         {mode === 'sign-up' && <SignUpProgress step={1} />}
 
-        <section
-          className="mb-6 rounded-xl border border-brand-500/40 bg-brand-950/30 p-5 sm:p-6"
-          aria-labelledby="demo-credentials-heading"
-        >
-          <h2
-            id="demo-credentials-heading"
-            className="font-display text-lg font-bold text-white"
-          >
-            Demo account
-          </h2>
-          <p className="mt-1 text-sm text-slate-300">
-            Use these credentials to try the full 3-step sign-up flow, or sign in with username or
-            email after you finish.
-          </p>
-          <dl className="mt-4 space-y-2 rounded-lg bg-navy-950/60 px-4 py-3 font-mono text-sm">
-            <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-              <dt className="text-slate-400">Username / email</dt>
-              <dd className="font-semibold text-brand-200">
-                {DEMO_CREDENTIALS.username} or {DEMO_CREDENTIALS.email}
-              </dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-              <dt className="text-slate-400">Password</dt>
-              <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.password}</dd>
-            </div>
-          </dl>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <Button type="button" size="lg" className="w-full" onClick={handleDemoSignUp}>
-              Start demo sign-up
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              className="w-full"
-              onClick={fillDemoCredentials}
-            >
-              Fill form with demo
-            </Button>
-          </div>
-          <p className="mt-3 text-center text-xs text-slate-500">
-            One click on &ldquo;Start demo sign-up&rdquo; — no typing required.
-          </p>
-        </section>
-
         <div
           className="mb-6 flex rounded-xl border border-white/10 bg-navy-950 p-1"
           role="tablist"
@@ -501,7 +420,6 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
                 value={form.login}
                 onChange={(e) => setForm({ ...form, login: e.target.value })}
                 className={inputClass}
-                placeholder="DemoUser or demo@rollnfitness.com"
               />
             </div>
           )}
@@ -532,7 +450,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
           )}
 
           <Button type="submit" size="lg" className="w-full">
-            {mode === 'sign-up' ? 'Continue to step 2' : 'Sign in'}
+            {mode === 'sign-up' ? 'Create account' : 'Sign in'}
           </Button>
 
           <p className="text-center text-xs text-slate-400">
