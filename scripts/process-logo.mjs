@@ -1,4 +1,4 @@
-// Extracts logo from checkerboard exports (keeps figure + trails + text only).
+// Extracts logo from checkerboard exports and writes full + emblem-only marks.
 // Run with: npm run logo:process
 
 import sharp from 'sharp'
@@ -9,6 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
 const sourcePath = path.join(projectRoot, 'public', 'rolln-logo-source.png')
 const outputPath = path.join(projectRoot, 'public', 'rolln-logo.png')
+const markPath = path.join(projectRoot, 'public', 'rolln-logo-mark.png')
 
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
 
@@ -38,14 +39,34 @@ function isTealGreenGradient(r, g, b) {
   return false
 }
 
-function isCheckerboard(r, g, b) {
+function isCheckerboardLight(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
   const l = luma(r, g, b)
   return sat <= 12 && l >= 88 && l <= 220
 }
 
+function isCheckerboardDark(r, g, b) {
+  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+  const l = luma(r, g, b)
+  return sat <= 14 && l >= 42 && l <= 82
+}
+
+function isDarkBackdrop(r, g, b) {
+  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+  const l = luma(r, g, b)
+  return sat <= 22 && l >= 28 && l <= 55
+}
+
+function isBackground(r, g, b) {
+  return (
+    isCheckerboardLight(r, g, b) ||
+    isCheckerboardDark(r, g, b) ||
+    isDarkBackdrop(r, g, b)
+  )
+}
+
 function isLogoPixel(r, g, b) {
-  if (isCheckerboard(r, g, b)) return false
+  if (isBackground(r, g, b)) return false
 
   if (
     isWarmMetal(r, g, b) ||
@@ -97,6 +118,32 @@ function buildLogoMask(data, width, height) {
   return mask
 }
 
+function findEmblemBottom(data, width, height) {
+  const rowCounts = new Uint32Array(height)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[idx(width, x, y) + 3] > 0) rowCounts[y]++
+    }
+  }
+
+  const textThreshold = width * 0.12
+  let textBandStart = height
+  for (let y = Math.floor(height * 0.55); y < height; y++) {
+    if (rowCounts[y] >= textThreshold) textBandStart = y
+  }
+
+  let emblemBottom = Math.floor(height * 0.72)
+  for (let y = textBandStart - 1; y >= Math.floor(height * 0.45); y--) {
+    if (rowCounts[y] < width * 0.05) {
+      emblemBottom = y
+      break
+    }
+  }
+
+  const cap = Math.floor(height * 0.75)
+  return Math.min(cap, Math.max(Math.floor(height * 0.68), emblemBottom))
+}
+
 const { data, info } = await sharp(sourcePath)
   .ensureAlpha()
   .raw()
@@ -128,7 +175,7 @@ for (let y = 0; y < height; y++) {
   }
 }
 
-await sharp(out, {
+const trimmed = await sharp(out, {
   raw: { width, height, channels: 4 },
 })
   .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
@@ -140,7 +187,42 @@ await sharp(out, {
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   })
   .png({ compressionLevel: 9 })
-  .toFile(outputPath)
+  .toBuffer()
+
+const trimmedMeta = await sharp(trimmed).metadata()
+const { data: trimmedData, info: trimmedInfo } = await sharp(trimmed)
+  .raw()
+  .toBuffer({ resolveWithObject: true })
+
+const emblemBottom = findEmblemBottom(
+  trimmedData,
+  trimmedInfo.width,
+  trimmedInfo.height,
+)
+
+const cropHeight = Math.min(
+  trimmedInfo.height,
+  Math.max(1, Math.floor(emblemBottom)),
+)
+
+await sharp(trimmed).png({ compressionLevel: 9 }).toFile(outputPath)
+
+await sharp(trimmed)
+  .extract({
+    left: 0,
+    top: 0,
+    width: trimmedInfo.width,
+    height: cropHeight,
+  })
+  .extend({
+    top: 6,
+    bottom: 6,
+    left: 6,
+    right: 6,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png({ compressionLevel: 9 })
+  .toFile(markPath)
 
 let transparent = 0
 const total = width * height
@@ -149,6 +231,10 @@ for (let y = 0; y < height; y++) {
     if (out[idx(width, x, y) + 3] === 0) transparent++
   }
 }
+
 console.log(
-  `Wrote ${path.relative(projectRoot, outputPath)} (${Math.round((transparent / total) * 100)}% transparent)`,
+  `Wrote ${path.relative(projectRoot, outputPath)} (${Math.round((transparent / total) * 100)}% transparent, ${trimmedMeta.width}x${trimmedMeta.height})`,
+)
+console.log(
+  `Wrote ${path.relative(projectRoot, markPath)} (emblem crop ${cropHeight}/${trimmedInfo.height}px)`,
 )

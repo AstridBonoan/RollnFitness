@@ -140,7 +140,7 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
             className="touch-target rounded-lg"
             aria-label={`${site.fullName} home`}
           >
-            <Logo variant="compact" glow />
+            <Logo variant="compact" />
           </button>
 
           <div className="hidden items-center gap-1 md:flex">
