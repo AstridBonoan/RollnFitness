@@ -16,7 +16,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
           className="pointer-events-none absolute inset-0 opacity-50"
           aria-hidden="true"
           style={{
-            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(34,211,238,0.12) 0%, transparent 50%),
+            backgroundImage: `radial-gradient(circle at 75% 45%, rgba(34,211,238,0.18) 0%, transparent 45%),
+              radial-gradient(circle at 20% 50%, rgba(34,211,238,0.12) 0%, transparent 50%),
               radial-gradient(circle at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 40%)`,
           }}
         />

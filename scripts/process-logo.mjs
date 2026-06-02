@@ -56,6 +56,15 @@ for (let i = 0; i < data.length; i += 4) {
     const t = Math.min(1, Math.max(0, (l - 85) / 135))
     out[i + 3] = Math.round(a * (1 - t * 0.85))
   }
+
+  // Lift dark logo pixels so they read clearly on navy backgrounds
+  if (out[i + 3] > 0) {
+    const pixelLuma = luma(out[i], out[i + 1], out[i + 2])
+    const boost = pixelLuma < 140 ? 1.25 + ((140 - pixelLuma) / 140) * 0.45 : 1.12
+    out[i] = Math.min(255, Math.round(out[i] * boost + 12))
+    out[i + 1] = Math.min(255, Math.round(out[i + 1] * boost + 14))
+    out[i + 2] = Math.min(255, Math.round(out[i + 2] * boost + 18))
+  }
 }
 
 await sharp(out, {
