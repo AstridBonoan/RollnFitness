@@ -44,6 +44,28 @@
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
+
+  .mobile-nav-overlay {
+    @apply fixed inset-0 z-[200] bg-navy-950/75 md:hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-nav-overlay--open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-drawer {
+    @apply fixed top-0 right-0 z-[210] flex h-[100dvh] w-[min(88vw,320px)] flex-col border-l border-white/10 bg-navy-900 shadow-2xl md:hidden;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .mobile-nav-drawer--open {
+    transform: translateX(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -55,9 +77,17 @@
     transform: none;
   }
 
-  *,
-  *::before,
-  *::after {
+  .mobile-nav-drawer {
+    transition: none;
+  }
+
+  .mobile-nav-overlay {
+    transition: none;
+  }
+
+  *:not(.mobile-nav-drawer):not(.mobile-nav-overlay),
+  *:not(.mobile-nav-drawer):not(.mobile-nav-overlay)::before,
+  *:not(.mobile-nav-drawer):not(.mobile-nav-overlay)::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

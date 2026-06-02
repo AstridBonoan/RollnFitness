@@ -11,8 +11,11 @@ const logoSrc = `${import.meta.env.BASE_URL}rolln-logo.png`
 const logoFilter =
   'brightness(1.08) contrast(1.08) saturate(1.15) drop-shadow(0 0 18px rgba(34,211,238,0.35)) drop-shadow(0 4px 16px rgba(34,211,238,0.2))'
 
+const logoFilterNav =
+  'brightness(1.05) contrast(1.05) saturate(1.1) drop-shadow(0 0 12px rgba(34,211,238,0.28))'
+
 const logoFilterCompact =
-  'brightness(1.06) contrast(1.06) saturate(1.1) drop-shadow(0 0 10px rgba(34,211,238,0.3))'
+  'brightness(1.04) contrast(1.04) saturate(1.05) drop-shadow(0 0 6px rgba(34,211,238,0.15))'
 
 export function Logo({ variant = 'compact', glow = false, className = '' }: LogoProps) {
   if (variant === 'full') {
@@ -39,19 +42,13 @@ export function Logo({ variant = 'compact', glow = false, className = '' }: Logo
 
   return (
     <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`}>
-      <div className={`relative shrink-0 ${glow ? 'px-1 py-0.5' : ''}`}>
-        {glow && (
-          <div
-            className="pointer-events-none absolute inset-0 scale-125 rounded-full bg-brand-400/20 blur-xl"
-            aria-hidden="true"
-          />
-        )}
+      <div className="relative shrink-0">
         <img
           src={logoSrc}
           alt=""
           aria-hidden="true"
-          className={`relative h-10 w-auto bg-transparent object-contain sm:h-12 ${glow ? '' : 'shrink-0'}`}
-          style={{ filter: glow ? logoFilter : logoFilterCompact }}
+          className="relative h-10 w-auto shrink-0 bg-transparent object-contain sm:h-12"
+          style={{ filter: glow ? logoFilterNav : logoFilterCompact }}
         />
       </div>
       <div className="min-w-0 text-left leading-tight">
