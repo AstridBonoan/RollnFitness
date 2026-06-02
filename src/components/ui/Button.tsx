@@ -1,0 +1,40 @@
+type ButtonVariant = 'primary' | 'secondary' | 'ghost'
+type ButtonSize = 'sm' | 'md' | 'lg'
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  children: React.ReactNode
+}
+
+const variants: Record<ButtonVariant, string> = {
+  primary:
+    'bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400 shadow-sm',
+  secondary:
+    'bg-white text-brand-700 border border-brand-200 hover:bg-brand-50 dark:bg-slate-900 dark:text-brand-300 dark:border-brand-800 dark:hover:bg-brand-950',
+  ghost:
+    'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10',
+}
+
+const sizes: Record<ButtonSize, string> = {
+  sm: 'px-4 py-2 text-sm',
+  md: 'px-5 py-2.5 text-base',
+  lg: 'px-6 py-3 text-lg',
+}
+
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  className = '',
+  children,
+  ...props
+}: ButtonProps) {
+  return (
+    <button
+      className={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors duration-200 ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
