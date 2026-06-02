@@ -16,6 +16,14 @@ interface StoredUser {
 
 const USERS_KEY = 'rollnfitness-users'
 
+const DEMO_USER: StoredUser = {
+  email: 'demo@rollnfitness.com',
+  username: 'DemoUser',
+  password: 'demo12345',
+  mobility: 'wheelchair',
+  onboarded: true,
+}
+
 const inputClass =
   'mt-2 w-full rounded-xl border border-white/20 bg-navy-950 px-4 py-3 text-white transition-colors focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20'
 
@@ -30,6 +38,21 @@ function loadUsers(): StoredUser[] {
 
 function saveUsers(users: StoredUser[]) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
+}
+
+function ensureDemoUser() {
+  const users = loadUsers()
+  const index = users.findIndex(
+    (u) => u.email.toLowerCase() === DEMO_USER.email.toLowerCase(),
+  )
+
+  if (index >= 0) {
+    users[index] = { ...DEMO_USER }
+  } else {
+    users.push({ ...DEMO_USER })
+  }
+
+  saveUsers(users)
 }
 
 export function JoinPage() {
@@ -48,6 +71,17 @@ export function JoinPage() {
     setMode(next)
     setStep('auth')
     resetForm()
+  }
+
+  const handleDemoLogin = () => {
+    ensureDemoUser()
+    setForm({
+      email: DEMO_USER.email,
+      username: DEMO_USER.username,
+      password: DEMO_USER.password,
+    })
+    setError('')
+    setStep('complete')
   }
 
   const handleSignUp = (e: React.FormEvent) => {
@@ -293,6 +327,25 @@ export function JoinPage() {
           <Button type="submit" size="lg" className="w-full">
             {mode === 'sign-up' ? 'Create account' : 'Sign in'}
           </Button>
+
+          <div className="relative flex items-center gap-3 py-1">
+            <div className="h-px flex-1 bg-white/10" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-500">or</span>
+            <div className="h-px flex-1 bg-white/10" aria-hidden="true" />
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            onClick={handleDemoLogin}
+          >
+            Try demo login
+          </Button>
+          <p className="text-center text-xs text-slate-500">
+            Demo account — no sign-up required. Explore the platform instantly.
+          </p>
 
           <p className="text-center text-xs text-slate-400">
             {mode === 'sign-up' ? (
