@@ -10,6 +10,22 @@ export function getWorkoutById(id: string): WorkoutProgram | undefined {
   return workouts.find((w) => w.id === id)
 }
 
+export const MOBILITY_SCROLL_KEY = 'rolln-scroll-mobility'
+
+/** Legacy hash anchors like #mobility-adaptive break hash routing; normalize to /workouts. */
+export function normalizeHashRoute(hashBody: string): string {
+  const raw = hashBody || '/'
+  if (raw.startsWith('/')) return raw
+
+  if (raw.startsWith('mobility-')) {
+    const mobilityId = raw.slice('mobility-'.length)
+    sessionStorage.setItem(MOBILITY_SCROLL_KEY, mobilityId)
+    return '/workouts'
+  }
+
+  return `/${raw}`
+}
+
 export function parseWorkoutRoute(pathname: string): string | null {
   const match = pathname.match(/^\/workouts\/([^/]+)$/)
   return match?.[1] ?? null

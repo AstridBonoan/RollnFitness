@@ -5,7 +5,7 @@ import { Footer } from './components/Footer'
 import { HomePage } from './components/pages/HomePage'
 import { WorkoutsPage } from './components/pages/WorkoutsPage'
 import { WorkoutDetailPage } from './components/pages/WorkoutDetailPage'
-import { parseWorkoutRoute } from './lib/workouts'
+import { normalizeHashRoute, parseWorkoutRoute } from './lib/workouts'
 import { ProgressPage } from './components/pages/ProgressPage'
 import { NutritionPage } from './components/pages/NutritionPage'
 import { ChallengesPage } from './components/pages/ChallengesPage'
@@ -16,7 +16,7 @@ import './index.css'
 
 function getRoute() {
   const raw = window.location.hash.replace('#', '') || '/'
-  return raw.startsWith('/') ? raw : `/${raw}`
+  return normalizeHashRoute(raw)
 }
 
 function App() {

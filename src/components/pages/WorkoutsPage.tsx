@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { getCurrentUser, mobilityLabel } from '../../lib/auth'
 import {
   buildWorkoutLibrarySections,
+  MOBILITY_SCROLL_KEY,
   workoutMatchesMobility,
   workouts,
 } from '../../lib/workouts'
@@ -11,6 +12,14 @@ import { PageShell } from '../ui/PageShell'
 
 interface WorkoutsPageProps {
   onNavigate: (path: string) => void
+}
+
+function scrollToMobilitySection(mobilityId: string) {
+  const el = document.getElementById(`mobility-${mobilityId}`)
+  if (!el) return
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  el.setAttribute('tabindex', '-1')
+  el.focus({ preventScroll: true })
 }
 
 export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
@@ -31,6 +40,14 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
 
   const totalPrograms = librarySections.reduce((n, s) => n + s.workoutCount, 0)
 
+  useEffect(() => {
+    const mobilityId = sessionStorage.getItem(MOBILITY_SCROLL_KEY)
+    if (!mobilityId) return
+    sessionStorage.removeItem(MOBILITY_SCROLL_KEY)
+    const frame = requestAnimationFrame(() => scrollToMobilitySection(mobilityId))
+    return () => cancelAnimationFrame(frame)
+  }, [librarySections])
+
   return (
     <PageShell
       title="Adaptive Workouts"
@@ -48,14 +65,15 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
         aria-label="Jump to mobility level"
       >
         {librarySections.map((section) => (
-          <a
+          <button
             key={section.mobilityId}
-            href={`#mobility-${section.mobilityId}`}
+            type="button"
+            onClick={() => scrollToMobilitySection(section.mobilityId)}
             className="touch-target rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-octane-500/40 hover:bg-octane-950/50 hover:text-white"
           >
             {section.icon} {section.label}
             <span className="ml-1.5 text-slate-500">({section.workoutCount})</span>
-          </a>
+          </button>
         ))}
       </nav>
 
@@ -88,8 +106,8 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
               aria-labelledby={`mobility-heading-${mobilitySection.mobilityId}`}
               className={
                 isUserSection
-                  ? 'scroll-mt-24 rounded-3xl border border-octane-600/25 bg-octane-950/20 p-6 sm:p-8'
-                  : 'scroll-mt-24'
+                  ? 'scroll-mt-28 rounded-3xl border border-octane-600/25 bg-octane-950/20 p-6 sm:p-8 focus:outline-none focus-visible:ring-2 focus-visible:ring-octane-400'
+                  : 'scroll-mt-28 focus:outline-none focus-visible:ring-2 focus-visible:ring-octane-400'
               }
             >
               <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
