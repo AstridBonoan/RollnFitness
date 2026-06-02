@@ -17,7 +17,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npm run logo:process
+      - run: npm run logo:mark
       - run: npm run build
       - uses: peaceiris/actions-gh-pages@v4
         with:

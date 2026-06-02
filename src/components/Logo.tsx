@@ -5,8 +5,14 @@ interface LogoProps {
   className?: string
 }
 
-const cache = 'mark-v3'
-const markSrc = `${import.meta.env.BASE_URL}rolln-logo-mark.png?v=${cache}`
+/** Intrinsic size of rolln-logo-mark.png (matches process-mark.mjs output). */
+const MARK_WIDTH = 392
+const MARK_HEIGHT = 176
+
+const cache = 'mark-v4'
+const base = import.meta.env.BASE_URL
+const mark1x = `${base}rolln-logo-mark.png?v=${cache}`
+const mark2x = `${base}rolln-logo-mark@2x.png?v=${cache}`
 
 function BrandText({ stacked }: { stacked?: boolean }) {
   if (stacked) {
@@ -34,16 +40,27 @@ function BrandText({ stacked }: { stacked?: boolean }) {
   )
 }
 
+function LogoMark({ className }: { className: string }) {
+  return (
+    <img
+      src={mark1x}
+      srcSet={`${mark1x} 1x, ${mark2x} 2x`}
+      width={MARK_WIDTH}
+      height={MARK_HEIGHT}
+      alt=""
+      aria-hidden="true"
+      decoding="async"
+      fetchPriority="high"
+      className={className}
+    />
+  )
+}
+
 export function Logo({ variant = 'compact', className = '' }: LogoProps) {
   if (variant === 'full') {
     return (
       <div className={`flex flex-col items-center gap-5 text-center ${className}`}>
-        <img
-          src={markSrc}
-          alt=""
-          aria-hidden="true"
-          className="h-auto w-full max-w-[280px] bg-transparent object-contain sm:max-w-[320px]"
-        />
+        <LogoMark className="h-36 w-auto max-w-full shrink-0 sm:h-44 lg:h-52" />
         <BrandText stacked />
       </div>
     )
@@ -51,12 +68,7 @@ export function Logo({ variant = 'compact', className = '' }: LogoProps) {
 
   return (
     <div className={`flex min-w-0 items-center gap-2.5 sm:gap-3 ${className}`}>
-      <img
-        src={markSrc}
-        alt=""
-        aria-hidden="true"
-        className="h-10 w-10 shrink-0 bg-transparent object-contain sm:h-11 sm:w-11"
-      />
+      <LogoMark className="h-12 w-auto max-w-[8.75rem] shrink-0 sm:h-14 sm:max-w-[10.5rem]" />
       <BrandText />
       <span className="sr-only">{site.logoAlt}</span>
     </div>

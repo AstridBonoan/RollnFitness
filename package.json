@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "logo:process": "node scripts/process-logo.mjs",
+    "logo:mark": "node scripts/process-mark.mjs",
     "logo:fix": "node scripts/fix-logo-edges.mjs"
   },
   "dependencies": {
