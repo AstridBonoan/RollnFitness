@@ -44,5 +44,53 @@ export function sortWorkoutsForUser(
   })
 }
 
+export interface WorkoutCategorySection {
+  category: WorkoutCategory
+  workouts: WorkoutProgram[]
+}
+
+export interface WorkoutMobilitySection {
+  mobilityId: MobilityId
+  label: string
+  icon: string
+  categories: WorkoutCategorySection[]
+  workoutCount: number
+}
+
+export function buildWorkoutLibrarySections(
+  mobilityLevels: readonly { id: string; label: string; icon: string }[],
+  priorityMobility?: string,
+): WorkoutMobilitySection[] {
+  const order = [...mobilityLevels].sort((a, b) => {
+    if (!priorityMobility) return 0
+    if (a.id === priorityMobility) return -1
+    if (b.id === priorityMobility) return 1
+    return 0
+  })
+
+  return order.map((level) => {
+    const categories = WORKOUT_CATEGORIES.map((category) => ({
+      category,
+      workouts: workouts
+        .filter(
+          (w) =>
+            (w.mobility as readonly string[]).includes(level.id) &&
+            w.categories.includes(category),
+        )
+        .sort((a, b) => a.title.localeCompare(b.title)),
+    })).filter((section) => section.workouts.length > 0)
+
+    const workoutCount = categories.reduce((n, c) => n + c.workouts.length, 0)
+
+    return {
+      mobilityId: level.id as MobilityId,
+      label: level.label,
+      icon: level.icon,
+      categories,
+      workoutCount,
+    }
+  })
+}
+
 export { workouts, WORKOUT_CATEGORIES }
 export type { MobilityId, WorkoutCategory, WorkoutProgram }

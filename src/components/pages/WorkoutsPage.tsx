@@ -1,16 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { getCurrentUser, mobilityLabel } from '../../lib/auth'
 import {
-  sortWorkoutsForUser,
-  workoutMatchesCategory,
+  buildWorkoutLibrarySections,
   workoutMatchesMobility,
-  WORKOUT_CATEGORIES,
   workouts,
 } from '../../lib/workouts'
-import type { WorkoutCategory } from '../../data/workouts'
 import { mobilityLevels } from '../../data/site'
 import type { WorkoutProgram } from '../../data/workouts'
-import { CategoryBadges } from '../workouts/CategoryBadges'
 import { PageShell } from '../ui/PageShell'
 
 interface WorkoutsPageProps {
@@ -19,64 +15,57 @@ interface WorkoutsPageProps {
 
 export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
   const user = getCurrentUser()
-  const [mobilityFilter, setMobilityFilter] = useState<string>(
-    user?.mobility && user.mobility !== '' ? user.mobility : 'all',
-  )
-  const [categoryFilter, setCategoryFilter] = useState<WorkoutCategory | 'all'>('all')
 
-  useEffect(() => {
-    if (user?.mobility) setMobilityFilter(user.mobility)
-  }, [user?.mobility])
-
-  const sorted = useMemo(
-    () => sortWorkoutsForUser(workouts, user?.mobility),
+  const librarySections = useMemo(
+    () => buildWorkoutLibrarySections(mobilityLevels, user?.mobility),
     [user?.mobility],
   )
-
-  const filtered = useMemo(() => {
-    return sorted.filter((w) => {
-      const mobilityOk =
-        mobilityFilter === 'all' ||
-        (w.mobility as readonly string[]).includes(mobilityFilter)
-      const categoryOk = workoutMatchesCategory(w, categoryFilter)
-      return mobilityOk && categoryOk
-    })
-  }, [sorted, mobilityFilter, categoryFilter])
 
   const recommended = useMemo(
     () =>
       user?.mobility
-        ? sorted.filter((w) => workoutMatchesMobility(w, user.mobility))
+        ? workouts.filter((w) => workoutMatchesMobility(w, user.mobility)).slice(0, 3)
         : [],
-    [sorted, user?.mobility],
+    [user?.mobility],
   )
 
-  const showRecommended =
-    recommended.length > 0 && mobilityFilter === 'all' && categoryFilter === 'all'
+  const totalPrograms = librarySections.reduce((n, s) => n + s.workoutCount, 0)
 
   return (
     <PageShell
       title="Adaptive Workouts"
-      description={
-        user?.mobility
-          ? `Programs matched to ${mobilityLabel(user.mobility)} appear first. Each workout is tagged with training categories and includes a guided video.`
-          : 'Browse programs by training category and mobility level. Each workout includes a guided video and modifications for how you move.'
-      }
+      description="Programs are organized by how you move, then by training category. Each includes a guided video and mobility-specific modifications."
     >
-      {user?.mobility && mobilityFilter === user.mobility && categoryFilter === 'all' && (
+      {user?.mobility && (
         <p className="mb-6 rounded-xl border border-octane-600/30 bg-octane-950/40 px-4 py-3 text-sm text-octane-200">
-          Showing programs suited for <strong>{mobilityLabel(user.mobility)}</strong>. Filter by
-          category or mobility below.
+          Your profile: <strong>{mobilityLabel(user.mobility)}</strong> — that section is listed
+          first. Jump to any mobility level below.
         </p>
       )}
 
-      {showRecommended && (
-        <section className="mb-10" aria-labelledby="for-you-heading">
+      <nav
+        className="mb-10 flex flex-wrap gap-2"
+        aria-label="Jump to mobility level"
+      >
+        {librarySections.map((section) => (
+          <a
+            key={section.mobilityId}
+            href={`#mobility-${section.mobilityId}`}
+            className="touch-target rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-octane-500/40 hover:bg-octane-950/50 hover:text-white"
+          >
+            {section.icon} {section.label}
+            <span className="ml-1.5 text-slate-500">({section.workoutCount})</span>
+          </a>
+        ))}
+      </nav>
+
+      {recommended.length > 0 && (
+        <section className="mb-12" aria-labelledby="for-you-heading">
           <h2 id="for-you-heading" className="font-display text-lg font-bold text-white">
-            Recommended for you
+            Quick start — {mobilityLabel(user!.mobility!)}
           </h2>
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {recommended.slice(0, 3).map((workout) => (
+            {recommended.map((workout) => (
               <WorkoutCard
                 key={workout.id}
                 workout={workout}
@@ -88,81 +77,79 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
         </section>
       )}
 
-      <section className="mb-8" aria-labelledby="category-filter-heading">
-        <h2 id="category-filter-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-          Training category
-        </h2>
-        <div
-          className="mt-3 flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filter by training category"
-        >
-          <FilterButton active={categoryFilter === 'all'} onClick={() => setCategoryFilter('all')}>
-            All categories
-          </FilterButton>
-          {WORKOUT_CATEGORIES.map((category) => (
-            <FilterButton
-              key={category}
-              active={categoryFilter === category}
-              onClick={() => setCategoryFilter(category)}
-            >
-              {category}
-            </FilterButton>
-          ))}
-        </div>
-      </section>
+      <div className="space-y-14">
+        {librarySections.map((mobilitySection) => {
+          const isUserSection = user?.mobility === mobilitySection.mobilityId
 
-      <section className="mb-8" aria-labelledby="mobility-filter-heading">
-        <h2 id="mobility-filter-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-          Mobility level
-        </h2>
-        <div
-          className="mt-3 flex flex-wrap gap-2"
-          role="group"
-          aria-label="Filter by mobility level"
-        >
-          <FilterButton active={mobilityFilter === 'all'} onClick={() => setMobilityFilter('all')}>
-            All levels
-          </FilterButton>
-          {mobilityLevels.map((level) => (
-            <FilterButton
-              key={level.id}
-              active={mobilityFilter === level.id}
-              onClick={() => setMobilityFilter(level.id)}
+          return (
+            <section
+              key={mobilitySection.mobilityId}
+              id={`mobility-${mobilitySection.mobilityId}`}
+              aria-labelledby={`mobility-heading-${mobilitySection.mobilityId}`}
+              className={
+                isUserSection
+                  ? 'scroll-mt-24 rounded-3xl border border-octane-600/25 bg-octane-950/20 p-6 sm:p-8'
+                  : 'scroll-mt-24'
+              }
             >
-              {level.icon} {level.label}
-            </FilterButton>
-          ))}
-        </div>
-      </section>
+              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+                <h2
+                  id={`mobility-heading-${mobilitySection.mobilityId}`}
+                  className="font-display text-2xl font-bold text-white sm:text-3xl"
+                >
+                  <span className="mr-2" aria-hidden="true">
+                    {mobilitySection.icon}
+                  </span>
+                  {mobilitySection.label}
+                </h2>
+                {isUserSection && (
+                  <span className="rounded-full border border-vitality-500/40 bg-vitality-950/50 px-3 py-1 text-xs font-semibold text-vitality-300">
+                    Your mobility level
+                  </span>
+                )}
+              </div>
 
-      {filtered.length === 0 ? (
+              <div className="mt-8 space-y-10">
+                {mobilitySection.categories.map((categorySection) => (
+                  <div
+                    key={`${mobilitySection.mobilityId}-${categorySection.category}`}
+                    aria-labelledby={`category-${mobilitySection.mobilityId}-${slugify(categorySection.category)}`}
+                  >
+                    <h3
+                      id={`category-${mobilitySection.mobilityId}-${slugify(categorySection.category)}`}
+                      className="text-sm font-semibold uppercase tracking-wider text-octane-300"
+                    >
+                      {categorySection.category}
+                    </h3>
+                    <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {categorySection.workouts.map((workout) => (
+                        <WorkoutCard
+                          key={`${mobilitySection.mobilityId}-${workout.id}`}
+                          workout={workout}
+                          forYou={isUserSection && !!user}
+                          onOpen={() => onNavigate(`/workouts/${workout.id}`)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )
+        })}
+      </div>
+
+      {totalPrograms === 0 && (
         <p className="rounded-xl border border-dashed border-white/20 p-8 text-center text-slate-400">
-          No workouts match these filters. Try &quot;All categories&quot; or &quot;All levels&quot;,
-          or complete your mobility profile on the{' '}
-          <button
-            type="button"
-            className="font-medium text-octane-400 underline hover:text-octane-300"
-            onClick={() => onNavigate('/join')}
-          >
-            Join
-          </button>{' '}
-          page.
+          No programs available yet.
         </p>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((workout) => (
-            <WorkoutCard
-              key={workout.id}
-              workout={workout}
-              forYou={workoutMatchesMobility(workout, user?.mobility)}
-              onOpen={() => onNavigate(`/workouts/${workout.id}`)}
-            />
-          ))}
-        </div>
       )}
     </PageShell>
   )
+}
+
+function slugify(category: string) {
+  return category.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
 
 function WorkoutCard({
@@ -187,14 +174,11 @@ function WorkoutCard({
           Matches your profile
         </span>
       )}
-      <h2 className="mt-3 text-xl font-bold text-white">{workout.title}</h2>
+      <h4 className="mt-3 text-xl font-bold text-white">{workout.title}</h4>
       <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-300">{workout.description}</p>
       <p className="mt-3 text-xs text-slate-500">
         Video program · {workout.video.instructor}
       </p>
-      <div className="mt-4">
-        <CategoryBadges categories={workout.categories} />
-      </div>
       <button
         type="button"
         className="btn-start-now touch-target mt-5 w-full py-3 text-sm"
@@ -204,30 +188,5 @@ function WorkoutCard({
         Start program
       </button>
     </article>
-  )
-}
-
-function FilterButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`touch-target rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-        active
-          ? 'bg-brand-500 text-white'
-          : 'bg-white/10 text-slate-200 hover:bg-white/20'
-      }`}
-    >
-      {children}
-    </button>
   )
 }
