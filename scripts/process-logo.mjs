@@ -1,5 +1,5 @@
 // Removes checkerboard background from the Rolln logo PNG without eating figure edges.
-// Run with: npm run logo:process && npm run logo:fix
+// Run with: npm run logo:process
 
 import sharp from 'sharp'
 import { fileURLToPath } from 'node:url'
@@ -16,17 +16,18 @@ function isBackgroundPixel(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
   const l = luma(r, g, b)
 
-  if (sat > 28) return false
-  if (l >= 200) return true
-  if (l >= 95 && l <= 210 && sat <= 20) return true
+  if (sat > 32) return false
+  if (l >= 175) return true
+  if (l >= 65 && l <= 155 && sat <= 28) return true
 
   return false
 }
 
 function isLogoCore(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  if (sat > 24) return true
-  if (b > r + 6 && b > g + 3) return true
+  if (sat > 16) return true
+  if (r > g + 4 && r > b + 2) return true
+  if (luma(r, g, b) < 85) return true
   return false
 }
 
@@ -34,7 +35,7 @@ function idx(width, x, y) {
   return (y * width + x) * 4
 }
 
-function buildLogoMask(data, width, height, expandRadius = 4) {
+function buildLogoMask(data, width, height, expandRadius = 5) {
   const core = new Uint8Array(width * height)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -89,20 +90,12 @@ for (let y = 0; y < height; y++) {
     out[p] = r
     out[p + 1] = g
     out[p + 2] = b
-    out[p + 3] = data[p + 3]
-
-    if (out[p + 3] > 0) {
-      const pixelLuma = luma(out[p], out[p + 1], out[p + 2])
-      const boost = pixelLuma < 140 ? 1.25 + ((140 - pixelLuma) / 140) * 0.45 : 1.12
-      out[p] = Math.min(255, Math.round(out[p] * boost + 12))
-      out[p + 1] = Math.min(255, Math.round(out[p + 1] * boost + 14))
-      out[p + 2] = Math.min(255, Math.round(out[p + 2] * boost + 18))
-    }
+    out[p + 3] = Math.max(data[p + 3], 255)
   }
 }
 
-const PAD_TOP = 14
-const PAD_SIDE = 6
+const PAD_TOP = 12
+const PAD_SIDE = 8
 
 await sharp(out, {
   raw: { width, height, channels: 4 },

@@ -18,9 +18,9 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
           className="pointer-events-none absolute inset-0 overflow-hidden opacity-50"
           aria-hidden="true"
           style={{
-            backgroundImage: `radial-gradient(circle at 75% 45%, rgba(34,211,238,0.18) 0%, transparent 45%),
-              radial-gradient(circle at 20% 50%, rgba(34,211,238,0.12) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 40%)`,
+            backgroundImage: `radial-gradient(circle at 75% 45%, rgba(232, 148, 58, 0.2) 0%, transparent 45%),
+              radial-gradient(circle at 20% 50%, rgba(200, 118, 42, 0.14) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.1) 0%, transparent 40%)`,
           }}
         />
         <div className="relative mx-auto max-w-6xl">
