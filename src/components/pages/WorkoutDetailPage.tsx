@@ -2,6 +2,7 @@ import { getCurrentUser, mobilityLabel } from '../../lib/auth'
 import { getWorkoutById, workoutMatchesMobility } from '../../lib/workouts'
 import type { WorkoutProgram } from '../../data/workouts'
 import { mobilityLevels } from '../../data/site'
+import { CategoryBadges } from '../workouts/CategoryBadges'
 import { WorkoutVideo } from '../workouts/WorkoutVideo'
 import { Button } from '../ui/Button'
 import { PageShell } from '../ui/PageShell'
@@ -79,6 +80,13 @@ export function WorkoutDetailPage({ workoutId, onNavigate }: WorkoutDetailPagePr
 
         <div className="space-y-6 lg:col-span-2">
           <div className="card-surface p-5">
+            <h2 className="text-lg font-bold text-white">Training categories</h2>
+            <div className="mt-3">
+              <CategoryBadges categories={workout.categories} />
+            </div>
+          </div>
+
+          <div className="card-surface p-5">
             <h2 className="text-lg font-bold text-white">Built for you</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-300">{workout.suitedFor}</p>
             <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-400">
@@ -148,16 +156,6 @@ export function WorkoutDetailPage({ workoutId, onNavigate }: WorkoutDetailPagePr
         </div>
       </section>
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {workout.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-md bg-white/10 px-2 py-1 text-xs font-medium text-slate-300"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
     </PageShell>
   )
 }

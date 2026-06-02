@@ -1,5 +1,19 @@
 export type MobilityId = 'wheelchair' | 'limited' | 'adaptive' | 'ambulatory'
 
+/** Standard training categories for every program in the library. */
+export const WORKOUT_CATEGORIES = [
+  'Strength',
+  'Muscle Building',
+  'Endurance',
+  'Power & Explosiveness',
+  'Functional Fitness',
+  'Mobility & Stability',
+  'Sports Performance',
+  'Strength & Conditioning',
+] as const
+
+export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number]
+
 export interface WorkoutModification {
   mobility: MobilityId
   tips: string[]
@@ -12,7 +26,7 @@ export interface WorkoutProgram {
   level: string
   mobility: MobilityId[]
   description: string
-  tags: readonly string[]
+  categories: WorkoutCategory[]
   suitedFor: string
   equipment: string[]
   focus: string[]
@@ -78,7 +92,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Beginner',
     mobility: ['wheelchair', 'limited'],
     description: 'Build shoulder and arm strength with resistance bands or dumbbells.',
-    tags: ['Strength', 'Seated'],
+    categories: ['Strength', 'Muscle Building'],
     suitedFor: 'Wheelchair users and anyone training upper-body strength from a seated position.',
     equipment: ['Sturdy chair', 'Light dumbbells or wrist weights (optional)'],
     focus: ['Chest', 'Shoulders', 'Back', 'Arms'],
@@ -102,7 +116,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited'],
     description: 'Raise your heart rate with seated punches, arm circles, and intervals.',
-    tags: ['Cardio', 'Seated'],
+    categories: ['Endurance'],
     suitedFor: 'Individuals who need cardiovascular training without standing.',
     equipment: ['Sturdy chair', 'Water nearby'],
     focus: ['Heart rate', 'Endurance', 'Upper-body cardio'],
@@ -126,7 +140,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Intermediate',
     mobility: ['wheelchair', 'limited', 'ambulatory'],
     description: 'Strengthen your core for better posture, balance, and everyday movement.',
-    tags: ['Core', 'Hybrid'],
+    categories: ['Mobility & Stability', 'Functional Fitness', 'Strength'],
     suitedFor: 'Anyone building trunk stability for transfers, posture, and daily movement.',
     equipment: ['Chair or mat', 'Small pillow (optional)'],
     focus: ['Deep core', 'Posture', 'Stability'],
@@ -150,7 +164,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'Gentle stretches to improve range of motion and reduce stiffness.',
-    tags: ['Mobility', 'Recovery'],
+    categories: ['Mobility & Stability'],
     suitedFor: 'All mobility levels recovering from stiffness or long periods of sitting.',
     equipment: ['Chair'],
     focus: ['Range of motion', 'Posture', 'Relaxation'],
@@ -176,7 +190,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Beginner',
     mobility: ['limited', 'ambulatory'],
     description: 'Supported balance exercises with chair or wall assistance.',
-    tags: ['Balance', 'Standing'],
+    categories: ['Mobility & Stability', 'Functional Fitness', 'Strength'],
     suitedFor: 'People who can stand with support and want safer balance practice.',
     equipment: ['Sturdy chair', 'Wall space (optional)'],
     focus: ['Balance', 'Leg strength', 'Confidence'],
@@ -215,7 +229,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Advanced',
     mobility: ['adaptive', 'ambulatory'],
     description: 'High-intensity intervals with modifications for every movement pattern.',
-    tags: ['HIIT', 'Hybrid'],
+    categories: ['Endurance', 'Power & Explosiveness', 'Strength & Conditioning'],
     suitedFor: 'Adaptive athletes ready for interval training with seated or standing options.',
     equipment: ['Chair', 'Light weights (optional)', 'Timer'],
     focus: ['Power', 'Cardio', 'Conditioning'],
@@ -254,7 +268,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Intermediate',
     mobility: ['wheelchair', 'adaptive'],
     description: 'Build pushing stamina with interval drills, tempo work, and recovery pacing.',
-    tags: ['Cardio', 'Endurance'],
+    categories: ['Endurance', 'Sports Performance'],
     suitedFor: 'Manual wheelchair users building sport and daily pushing endurance.',
     equipment: ['Wheelchair', 'Open space or treadmill (optional)'],
     focus: ['Push power', 'Cardio endurance', 'Recovery pacing'],
@@ -293,7 +307,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Beginner',
     mobility: ['wheelchair', 'limited'],
     description: 'Strengthen hands, forearms, and lats for transfers, daily tasks, and sport.',
-    tags: ['Strength', 'Seated'],
+    categories: ['Strength', 'Muscle Building', 'Functional Fitness'],
     suitedFor: 'Users who need stronger grip and pulling strength for transfers and equipment.',
     equipment: ['Resistance band', 'Sturdy anchor point'],
     focus: ['Grip', 'Lats', 'Posture'],
@@ -332,7 +346,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'A short wake-up routine with breathwork, mobility, and light cardio.',
-    tags: ['Cardio', 'Mobility'],
+    categories: ['Endurance', 'Mobility & Stability'],
     suitedFor: 'Anyone wanting a brief daily routine to wake up the body.',
     equipment: ['Chair'],
     focus: ['Energy', 'Mobility', 'Breathing'],
@@ -361,7 +375,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive'],
     description: 'Slow flows and holds to release tension in hips, spine, and shoulders.',
-    tags: ['Recovery', 'Seated'],
+    categories: ['Mobility & Stability'],
     suitedFor: 'Recovery days and stress relief for seated athletes.',
     equipment: ['Chair or wheelchair'],
     focus: ['Flexibility', 'Breath', 'Relaxation'],
@@ -391,7 +405,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'Ease desk and wheelchair posture strain with targeted mobility and stretching.',
-    tags: ['Recovery', 'Mobility'],
+    categories: ['Mobility & Stability'],
     suitedFor: 'Anyone with neck, shoulder, or upper-back tension from sitting.',
     equipment: ['Chair'],
     focus: ['Neck', 'Shoulders', 'Upper back'],
@@ -415,7 +429,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Intermediate',
     mobility: ['limited', 'ambulatory'],
     description: 'Functional pushing, pulling, and core work to make transfers safer and easier.',
-    tags: ['Strength', 'Functional'],
+    categories: ['Functional Fitness', 'Strength'],
     suitedFor: 'Individuals preparing for safer transfers and functional daily movement.',
     equipment: ['Sturdy chair', 'Resistance band (optional)'],
     focus: ['Push', 'Pull', 'Core bracing'],
@@ -453,7 +467,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Beginner',
     mobility: ['wheelchair', 'limited', 'ambulatory'],
     description: 'Leg and hip work with seated, supported standing, and band variations.',
-    tags: ['Strength', 'Hybrid'],
+    categories: ['Strength', 'Muscle Building'],
     suitedFor: 'Users training legs from seated or supported-standing positions.',
     equipment: ['Chair', 'Resistance band (optional)'],
     focus: ['Hips', 'Legs', 'Stability'],
@@ -477,7 +491,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'Diaphragmatic breathing paired with gentle core activation for recovery days.',
-    tags: ['Recovery', 'Core'],
+    categories: ['Mobility & Stability'],
     suitedFor: 'Recovery days, stress management, and gentle core re-activation.',
     equipment: ['Chair'],
     focus: ['Breathing', 'Core awareness', 'Relaxation'],
@@ -503,7 +517,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Intermediate',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'Full-body circuit using bands — easily scaled up or down by resistance level.',
-    tags: ['Strength', 'Circuit'],
+    categories: ['Strength & Conditioning', 'Muscle Building', 'Strength'],
     suitedFor: 'Trainees ready for a full-body band circuit with scalable resistance.',
     equipment: ['Resistance bands', 'Anchor point', 'Chair'],
     focus: ['Full body', 'Strength endurance'],
@@ -527,7 +541,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'Advanced',
     mobility: ['adaptive', 'ambulatory'],
     description: 'Explosive pushes, rotations, and conditioning for court and track athletes.',
-    tags: ['Power', 'HIIT'],
+    categories: ['Sports Performance', 'Power & Explosiveness', 'Strength & Conditioning'],
     suitedFor: 'Competitive adaptive athletes building power and conditioning.',
     equipment: ['Chair', 'Bands or light weights', 'Open space'],
     focus: ['Power', 'Rotation', 'Sport conditioning'],
@@ -565,7 +579,7 @@ export const workouts: WorkoutProgram[] = [
     level: 'All levels',
     mobility: ['wheelchair', 'limited', 'adaptive', 'ambulatory'],
     description: 'Wind down after training with guided stretches for arms, chest, and upper back.',
-    tags: ['Recovery', 'Cooldown'],
+    categories: ['Mobility & Stability'],
     suitedFor: 'Cool-down after any RollnFitness session or sport practice.',
     equipment: ['Chair'],
     focus: ['Recovery', 'Flexibility'],

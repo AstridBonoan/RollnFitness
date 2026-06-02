@@ -1,4 +1,10 @@
-import { workouts, type MobilityId, type WorkoutProgram } from '../data/workouts'
+import {
+  workouts,
+  WORKOUT_CATEGORIES,
+  type MobilityId,
+  type WorkoutCategory,
+  type WorkoutProgram,
+} from '../data/workouts'
 
 export function getWorkoutById(id: string): WorkoutProgram | undefined {
   return workouts.find((w) => w.id === id)
@@ -7,6 +13,14 @@ export function getWorkoutById(id: string): WorkoutProgram | undefined {
 export function parseWorkoutRoute(pathname: string): string | null {
   const match = pathname.match(/^\/workouts\/([^/]+)$/)
   return match?.[1] ?? null
+}
+
+export function workoutMatchesCategory(
+  workout: WorkoutProgram,
+  category: WorkoutCategory | 'all',
+): boolean {
+  if (category === 'all') return true
+  return workout.categories.includes(category)
 }
 
 export function workoutMatchesMobility(
@@ -30,5 +44,5 @@ export function sortWorkoutsForUser(
   })
 }
 
-export { workouts }
-export type { MobilityId, WorkoutProgram }
+export { workouts, WORKOUT_CATEGORIES }
+export type { MobilityId, WorkoutCategory, WorkoutProgram }

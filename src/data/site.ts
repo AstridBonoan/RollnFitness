@@ -55,8 +55,8 @@ export const coreFeatures = [
   },
 ] as const
 
-export { workouts } from './workouts'
-export type { MobilityId, WorkoutProgram } from './workouts'
+export { workouts, WORKOUT_CATEGORIES } from './workouts'
+export type { MobilityId, WorkoutCategory, WorkoutProgram } from './workouts'
 
 export const sportsPrograms = [
   {
