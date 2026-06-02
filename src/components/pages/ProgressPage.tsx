@@ -27,23 +27,20 @@ export function ProgressPage() {
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-slate-900/60"
-          >
+          <div key={stat.label} className="card-surface p-5">
             <span className="text-2xl" aria-hidden="true">{stat.icon}</span>
-            <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+            <p className="mt-3 text-2xl font-bold text-white">{stat.value}</p>
+            <p className="text-sm text-slate-400">{stat.label}</p>
           </div>
         ))}
       </div>
 
       <section className="mt-10" aria-labelledby="weekly-chart-heading">
-        <h2 id="weekly-chart-heading" className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 id="weekly-chart-heading" className="text-xl font-bold text-white">
           This week
         </h2>
         <div
-          className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-900/60"
+          className="mt-6 card-surface p-6"
           role="img"
           aria-label="Bar chart showing workout minutes per day this week: Monday 25, Wednesday 30, Thursday 20, Saturday 35, Sunday 15. Tuesday and Friday had no workouts."
         >
@@ -53,12 +50,15 @@ export function ProgressPage() {
                 <div className="flex w-full flex-1 items-end justify-center">
                   <div
                     className={`w-full max-w-[40px] rounded-t-lg transition-all ${
-                      day.completed ? 'bg-brand-500' : 'bg-slate-200 dark:bg-slate-700'
+                      day.completed ? 'bg-brand-400' : 'bg-navy-600'
                     }`}
-                    style={{ height: `${(day.minutes / maxMinutes) * 100}%`, minHeight: day.minutes > 0 ? '8px' : '4px' }}
+                    style={{
+                      height: `${(day.minutes / maxMinutes) * 100}%`,
+                      minHeight: day.minutes > 0 ? '8px' : '4px',
+                    }}
                   />
                 </div>
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{day.day}</span>
+                <span className="text-xs font-medium text-slate-400">{day.day}</span>
               </div>
             ))}
           </div>
@@ -66,7 +66,7 @@ export function ProgressPage() {
       </section>
 
       <section className="mt-10" aria-labelledby="recent-heading">
-        <h2 id="recent-heading" className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 id="recent-heading" className="text-xl font-bold text-white">
           Recent sessions
         </h2>
         <ul className="mt-4 space-y-3">
@@ -77,13 +77,13 @@ export function ProgressPage() {
           ].map((session) => (
             <li
               key={session.name + session.date}
-              className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 dark:border-white/10 dark:bg-slate-900/60"
+              className="flex items-center justify-between card-surface px-5 py-4"
             >
               <div>
-                <p className="font-semibold text-slate-900 dark:text-white">{session.name}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{session.date}</p>
+                <p className="font-semibold text-white">{session.name}</p>
+                <p className="text-sm text-slate-400">{session.date}</p>
               </div>
-              <span className="text-sm font-medium text-brand-600 dark:text-brand-400">{session.duration}</span>
+              <span className="text-sm font-medium text-brand-400">{session.duration}</span>
             </li>
           ))}
         </ul>

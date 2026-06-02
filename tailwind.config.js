@@ -22,19 +22,23 @@ export default {
           500: '#8b5cf6',
           600: '#7c3aed',
         },
-        surface: '#f8fafc',
-        'surface-dark': '#0c1222',
+        navy: {
+          950: '#070f1a',
+          900: '#0a1628',
+          800: '#0f2744',
+          700: '#1a365d',
+          600: '#234563',
+        },
       },
       fontFamily: {
         sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
         display: ['"Outfit"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 40px -12px rgba(8, 145, 178, 0.45)',
-        card: '0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -8px rgba(15, 23, 42, 0.08)',
+        glow: '0 0 40px -12px rgba(34, 211, 238, 0.35)',
+        card: '0 4px 24px -8px rgba(0, 0, 0, 0.4)',
       },
     },
   },
-  darkMode: 'class',
   plugins: [],
 }

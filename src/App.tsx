@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useTheme } from './hooks/useTheme'
 import { SkipLink } from './components/SkipLink'
 import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
@@ -18,7 +17,6 @@ function getRoute() {
 }
 
 function App() {
-  const { isDark, toggleTheme } = useTheme()
   const [pathname, setPathname] = useState(getRoute)
 
   useEffect(() => {
@@ -36,14 +34,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-surface transition-colors duration-300 dark:bg-surface-dark">
+    <div className="min-h-screen bg-navy-950">
       <SkipLink />
-      <Navbar
-        isDark={isDark}
-        onThemeToggle={toggleTheme}
-        pathname={pathname}
-        onNavigate={navigateTo}
-      />
+      <Navbar pathname={pathname} onNavigate={navigateTo} />
       <main id="main-content">
         {pathname === '/' && <HomePage onNavigate={navigateTo} />}
         {pathname === '/workouts' && <WorkoutsPage />}

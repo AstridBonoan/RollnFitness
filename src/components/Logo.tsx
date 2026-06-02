@@ -14,9 +14,9 @@ export function Logo({ variant = 'compact', className = '' }: LogoProps) {
         <img
           src={logoSrc}
           alt={site.logoAlt}
-          className="h-auto w-full max-w-md object-contain drop-shadow-md dark:drop-shadow-[0_4px_24px_rgba(34,211,238,0.15)]"
+          className="h-auto w-full max-w-md object-contain drop-shadow-[0_4px_24px_rgba(34,211,238,0.15)]"
         />
-        <p className="mt-4 font-display text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
+        <p className="mt-4 font-display text-xl font-bold text-white sm:text-2xl">
           {site.fullName}
         </p>
       </div>
@@ -32,10 +32,10 @@ export function Logo({ variant = 'compact', className = '' }: LogoProps) {
         className="h-10 w-auto shrink-0 object-contain drop-shadow-sm sm:h-12"
       />
       <div className="min-w-0 text-left leading-tight">
-        <p className="truncate font-display text-base font-bold text-slate-900 dark:text-white sm:text-lg">
+        <p className="truncate font-display text-base font-bold text-white sm:text-lg">
           RollnFitness
         </p>
-        <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300 sm:text-xs">
+        <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-brand-300 sm:text-xs">
           by RollnEnterprises
         </p>
       </div>
