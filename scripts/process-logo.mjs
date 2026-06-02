@@ -1,4 +1,4 @@
-// Removes checkerboard background from the Rolln logo PNG without eating figure edges.
+// Removes grey checkerboard from the Rolln logo without eating metallic edges.
 // Run with: npm run logo:process
 
 import sharp from 'sharp'
@@ -12,22 +12,28 @@ const outputPath = path.join(projectRoot, 'public', 'rolln-logo.png')
 
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
 
+/** Grey checkerboard tiles from the Gemini export (dark ~38, light ~91). */
 function isBackgroundPixel(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  const l = luma(r, g, b)
+  if (sat > 22) return false
 
-  if (sat > 32) return false
-  if (l >= 175) return true
-  if (l >= 65 && l <= 155 && sat <= 28) return true
+  const l = luma(r, g, b)
+  if (l >= 26 && l <= 52) return true
+  if (l >= 70 && l <= 108) return true
 
   return false
 }
 
 function isLogoCore(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  if (sat > 16) return true
-  if (r > g + 4 && r > b + 2) return true
-  if (luma(r, g, b) < 85) return true
+  const l = luma(r, g, b)
+
+  if (sat <= 12 && l >= 26 && l <= 108) return false
+
+  if (sat > 22) return true
+  if (r > g + 12 && r > b + 8) return true
+  if (l < 65) return true
+
   return false
 }
 
@@ -35,7 +41,7 @@ function idx(width, x, y) {
   return (y * width + x) * 4
 }
 
-function buildLogoMask(data, width, height, expandRadius = 5) {
+function buildLogoMask(data, width, height, expandRadius = 6) {
   const core = new Uint8Array(width * height)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -90,25 +96,29 @@ for (let y = 0; y < height; y++) {
     out[p] = r
     out[p + 1] = g
     out[p + 2] = b
-    out[p + 3] = Math.max(data[p + 3], 255)
+    out[p + 3] = 255
   }
 }
-
-const PAD_TOP = 12
-const PAD_SIDE = 8
 
 await sharp(out, {
   raw: { width, height, channels: 4 },
 })
-  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 2 })
+  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
   .extend({
-    top: PAD_TOP,
-    bottom: PAD_SIDE,
-    left: PAD_SIDE,
-    right: PAD_SIDE,
+    top: 10,
+    bottom: 8,
+    left: 8,
+    right: 8,
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   })
   .png({ compressionLevel: 9 })
   .toFile(outputPath)
 
-console.log(`Wrote ${path.relative(projectRoot, outputPath)}`)
+const { data: check } = await sharp(outputPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+let transparent = 0
+for (let i = 3; i < check.length; i += 4) {
+  if (check[i] === 0) transparent++
+}
+console.log(
+  `Wrote ${path.relative(projectRoot, outputPath)} (${info.width}x${info.height}, ${Math.round((transparent / (width * height)) * 100)}% transparent)`,
+)
