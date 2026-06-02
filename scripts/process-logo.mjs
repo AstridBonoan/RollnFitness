@@ -29,6 +29,12 @@ function isCircuitGold(r, g, b) {
   return r > 155 && g > 105 && sat > 38
 }
 
+function isNeutralBackdrop(r, g, b) {
+  const sat = Math.max(r, g, b) - Math.min(r, g, b)
+  const l = luma(r, g, b)
+  return sat < 32 && l < 95 && Math.abs(r - g) < 22 && Math.abs(g - b) < 28
+}
+
 function isLogoPixel(r, g, b) {
   if (isWarmMetal(r, g, b) || isCyanEnergy(r, g, b) || isVitalityGreen(r, g, b) || isCircuitGold(r, g, b)) {
     return true
@@ -57,7 +63,7 @@ function buildLogoMask(data, width, height) {
   }
 
   const mask = new Uint8Array(width * height)
-  const radius = 4
+  const radius = 3
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (!core[y * width + x]) continue
@@ -95,9 +101,21 @@ for (let y = 0; y < height; y++) {
       continue
     }
 
-    out[p] = data[p]
-    out[p + 1] = data[p + 1]
-    out[p + 2] = data[p + 2]
+    const r = data[p]
+    const g = data[p + 1]
+    const b = data[p + 2]
+
+    if (!isLogoPixel(r, g, b) || isNeutralBackdrop(r, g, b)) {
+      out[p] = 0
+      out[p + 1] = 0
+      out[p + 2] = 0
+      out[p + 3] = 0
+      continue
+    }
+
+    out[p] = r
+    out[p + 1] = g
+    out[p + 2] = b
     out[p + 3] = 255
   }
 }
