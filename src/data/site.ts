@@ -4,7 +4,7 @@ export const site = {
   fullName: 'RollnFitness by RollnEnterprises',
   tagline: 'Fitness for every body.',
   parentTagline: 'Visible. Active. Limitless.',
-  logoAlt: 'RollnFitness logo — bronze adaptive athlete in a racing wheelchair with flame trail',
+  logoAlt: 'RollnFitness logo — adaptive athlete in a racing wheelchair with cyan and green energy trails',
   description:
     'An adaptive fitness platform for wheelchair users, adaptive athletes, individuals with limited mobility, and ambulatory users.',
   url: 'https://astridbonoan.github.io/RollnFitness/',

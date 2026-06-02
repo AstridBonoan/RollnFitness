@@ -53,10 +53,10 @@ export function WorkoutsPage() {
             </div>
             <button
               type="button"
-              className="touch-target mt-5 w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-400"
+              className="btn-start-now touch-target mt-5 w-full py-3 text-sm"
               aria-label={`Start ${workout.title} workout — coming soon`}
             >
-              Start workout (coming soon)
+              Start now (coming soon)
             </button>
           </article>
         ))}

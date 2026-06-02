@@ -50,7 +50,7 @@ export function ProgressPage() {
                 <div className="flex w-full flex-1 items-end justify-center">
                   <div
                     className={`w-full max-w-[40px] rounded-t-lg transition-all ${
-                      day.completed ? 'bg-brand-400' : 'bg-navy-600'
+                      day.completed ? 'bg-vitality-500' : 'bg-carbon-600'
                     }`}
                     style={{
                       height: `${(day.minutes / maxMinutes) * 100}%`,

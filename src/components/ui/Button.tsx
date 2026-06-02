@@ -8,10 +8,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-500 text-white hover:bg-brand-400 shadow-glow',
+  primary:
+    'bg-octane-500 text-carbon-950 hover:bg-octane-400 shadow-glow-octane font-bold uppercase tracking-wide',
   secondary:
-    'bg-navy-800 text-brand-300 border border-brand-700 hover:bg-navy-700 hover:text-brand-200',
-  ghost: 'text-slate-200 hover:bg-white/10',
+    'bg-carbon-800 text-octane-300 border border-octane-700/50 hover:bg-carbon-700 hover:text-octane-200',
+  ghost: 'text-steel-200 hover:bg-white/10',
 }
 
 const sizes: Record<ButtonSize, string> = {
@@ -29,7 +30,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors duration-200 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

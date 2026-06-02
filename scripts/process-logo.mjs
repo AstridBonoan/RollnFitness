@@ -1,4 +1,4 @@
-// Replaces checkerboard with site background; keeps bronze logo pixels intact.
+// Removes dark brushed-metal background; exports transparent PNG.
 // Run with: npm run logo:process
 
 import sharp from 'sharp'
@@ -10,26 +10,30 @@ const projectRoot = path.resolve(__dirname, '..')
 const sourcePath = path.join(projectRoot, 'public', 'rolln-logo-source.png')
 const outputPath = path.join(projectRoot, 'public', 'rolln-logo.png')
 
-const SITE_BG = { r: 15, g: 8, b: 5 }
-
 const luma = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b
 
+/** Dark matte carbon / brushed slate backdrop baked into the export. */
 function isBackgroundPixel(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
-  if (sat > 22) return false
   const l = luma(r, g, b)
-  if (l >= 26 && l <= 52) return true
-  if (l >= 70 && l <= 108) return true
+
+  if (sat > 24) return false
+  if (l >= 88) return false
+  if (l <= 72) return true
+
   return false
 }
 
 function isLogoCore(r, g, b) {
   const sat = Math.max(r, g, b) - Math.min(r, g, b)
   const l = luma(r, g, b)
-  if (sat <= 12 && l >= 26 && l <= 108) return false
-  if (sat > 22) return true
-  if (r > g + 12 && r > b + 8) return true
-  if (l < 65) return true
+
+  if (l >= 78) return true
+  if (sat > 20) return true
+  if (b > r + 14 && b > g - 5) return true
+  if (g > r + 14) return true
+  if (r > g + 10 && r > 100) return true
+
   return false
 }
 
@@ -47,7 +51,7 @@ function buildLogoMask(data, width, height) {
   }
 
   const mask = new Uint8Array(width * height)
-  const radius = 6
+  const radius = 5
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (!core[y * width + x]) continue
@@ -80,10 +84,10 @@ for (let y = 0; y < height; y++) {
     const keep = logoMask[i] || !isBackgroundPixel(data[p], data[p + 1], data[p + 2])
 
     if (!keep) {
-      out[p] = SITE_BG.r
-      out[p + 1] = SITE_BG.g
-      out[p + 2] = SITE_BG.b
-      out[p + 3] = 255
+      out[p] = 0
+      out[p + 1] = 0
+      out[p + 2] = 0
+      out[p + 3] = 0
       continue
     }
 
@@ -97,7 +101,21 @@ for (let y = 0; y < height; y++) {
 await sharp(out, {
   raw: { width, height, channels: 4 },
 })
+  .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 1 })
+  .extend({
+    top: 12,
+    bottom: 10,
+    left: 10,
+    right: 10,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
   .png({ compressionLevel: 9 })
   .toFile(outputPath)
 
-console.log(`Wrote ${path.relative(projectRoot, outputPath)}`)
+let transparent = 0
+for (let i = 3; i < out.length; i += 4) {
+  if (out[i] === 0) transparent++
+}
+console.log(
+  `Wrote ${path.relative(projectRoot, outputPath)} (${Math.round((transparent / (width * height)) * 100)}% transparent pixels)`,
+)

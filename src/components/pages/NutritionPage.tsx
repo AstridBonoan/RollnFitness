@@ -7,8 +7,8 @@ export function NutritionPage() {
       title="Nutrition Guidance"
       description="Personalized nutrition support designed for adaptive athletes and active wheelchair users. Fuel your training with guidance that fits your lifestyle."
     >
-      <div className="mb-10 rounded-2xl border border-accent-500/30 bg-accent-500/10 p-6">
-        <p className="text-sm font-semibold uppercase tracking-wider text-accent-400">
+      <div className="mb-10 rounded-2xl border border-vitality-500/30 bg-vitality-950/30 p-6">
+        <p className="text-sm font-semibold uppercase tracking-wider text-vitality-400">
           Personalized plans — coming with early access
         </p>
         <p className="mt-2 text-slate-200">

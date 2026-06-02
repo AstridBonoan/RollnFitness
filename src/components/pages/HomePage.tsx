@@ -18,9 +18,9 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
           className="pointer-events-none absolute inset-0 overflow-hidden opacity-50"
           aria-hidden="true"
           style={{
-            backgroundImage: `radial-gradient(circle at 75% 45%, rgba(232, 148, 58, 0.2) 0%, transparent 45%),
-              radial-gradient(circle at 20% 50%, rgba(200, 118, 42, 0.14) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.1) 0%, transparent 40%)`,
+            backgroundImage: `radial-gradient(circle at 75% 45%, rgba(0, 242, 255, 0.12) 0%, transparent 45%),
+              radial-gradient(circle at 20% 50%, rgba(57, 255, 20, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.06) 0%, transparent 40%)`,
           }}
         />
         <div className="relative mx-auto max-w-6xl">
@@ -31,19 +31,19 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
               transition={{ duration: 0.5 }}
               className="max-w-xl"
             >
-              <p className="mb-4 inline-flex items-center rounded-full bg-brand-900/40 px-4 py-1.5 text-sm font-semibold text-brand-200">
+              <p className="mb-4 inline-flex items-center rounded-full border border-octane-600/40 bg-octane-950/50 px-4 py-1.5 text-sm font-semibold text-octane-300">
                 {site.fullName}
               </p>
               <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
                 {currentUser ? (
                   <>
                     Welcome,{' '}
-                    <span className="text-brand-400">{currentUser.username}</span>!
+                    <span className="text-octane-400">{currentUser.username}</span>!
                   </>
                 ) : (
                   <>
                     Move with confidence.{' '}
-                    <span className="text-brand-400">Train your way.</span>
+                    <span className="text-octane-400">Train your way.</span>
                   </>
                 )}
               </h1>
@@ -109,11 +109,11 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
 
       <section className="section-padding px-4 sm:px-6 lg:px-8" aria-labelledby="vision-heading">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 p-8 shadow-glow sm:p-12">
+          <div className="rounded-3xl bg-gradient-to-br from-octane-800 via-carbon-800 to-carbon-950 border border-octane-700/30 p-8 shadow-glow-octane sm:p-12">
             <h2 id="vision-heading" className="font-display text-3xl font-bold text-white sm:text-4xl">
               Fitness should welcome every body
             </h2>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-100">
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-steel-200">
               Most fitness apps assume everyone moves the same way. RollnFitness is built differently —
               inclusive, empowering, and designed around how you actually move, train, and grow.
             </p>
@@ -131,7 +131,7 @@ export function HomePage({ onNavigate, currentUser }: HomePageProps) {
                   >
                     ✓
                   </span>
-                  <span className="text-brand-50">{item}</span>
+                  <span className="text-steel-100">{item}</span>
                 </li>
               ))}
             </ul>

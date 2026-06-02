@@ -29,7 +29,14 @@ export function ChallengesPage() {
         ))}
       </div>
 
-      <section className="mt-12 rounded-2xl border border-dashed border-brand-700 bg-brand-950/30 p-8 text-center">
+      <div className="banner-achievement mt-10" role="status">
+        <p className="text-xs font-bold uppercase tracking-widest text-circuit-400">Milestone unlocked</p>
+        <p className="mt-1 font-display text-lg font-bold text-steel-50">
+          You hit your weekly movement goal — keep the streak alive.
+        </p>
+      </div>
+
+      <section className="mt-12 rounded-2xl border border-dashed border-octane-700/50 bg-carbon-900/50 p-8 text-center">
         <h2 className="text-xl font-bold text-white">Create your own challenge</h2>
         <p className="mx-auto mt-3 max-w-md text-slate-300">
           Invite friends, set a goal, and track progress together. Custom challenges launch with early access.

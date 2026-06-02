@@ -44,7 +44,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="dashboard-shell">
       <SkipLink />
       <Navbar
         pathname={pathname}

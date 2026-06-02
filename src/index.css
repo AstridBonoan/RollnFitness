@@ -2,17 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── RollnFitness design tokens (CSS custom properties) ─── */
+:root {
+  --rf-premium-dark: #121214;
+  --rf-premium-darker: #0a0a0b;
+  --rf-premium-slate: #1a1a1f;
+
+  --rf-carbon-950: #0a0a0b;
+  --rf-carbon-900: #121214;
+  --rf-carbon-800: #1a1a1f;
+
+  --rf-octane-400: #00f2ff;
+  --rf-octane-500: #00c8e6;
+  --rf-octane-600: #0099b8;
+
+  --rf-vitality-400: #39ff14;
+  --rf-vitality-500: #2ee60f;
+  --rf-vitality-600: #22b80c;
+
+  --rf-circuit-400: #ffd700;
+  --rf-circuit-500: #e6b800;
+  --rf-circuit-600: #b8860b;
+
+  --rf-steel-100: #e8eaed;
+  --rf-steel-200: #c5c9d0;
+  --rf-steel-300: #9aa0ab;
+
+  --rf-glow-octane: 0 0 32px -8px rgba(0, 242, 255, 0.5);
+  --rf-glow-vitality: 0 0 28px -8px rgba(57, 255, 20, 0.4);
+  --rf-glow-circuit: 0 0 28px -8px rgba(255, 215, 0, 0.45);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply font-sans antialiased text-slate-100 bg-navy-950;
+    @apply font-sans antialiased text-steel-100 bg-carbon-950;
+    background-image: radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgba(26, 26, 31, 0.9) 0%,
+      transparent 70%
+    );
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-400;
+    @apply outline-2 outline-offset-2 outline-octane-400;
   }
 }
 
@@ -26,27 +62,65 @@
   }
 
   .card-hover:hover {
-    @apply -translate-y-0.5 shadow-card border-brand-700/30;
+    @apply -translate-y-0.5 shadow-card border-octane-700/40;
   }
 
   .nav-glass {
-    @apply border-b border-white/10 bg-navy-900/90 backdrop-blur-xl supports-[backdrop-filter]:bg-navy-900/80;
+    @apply border-b border-steel-700/50 bg-carbon-900/90 backdrop-blur-xl supports-[backdrop-filter]:bg-carbon-900/80;
   }
 
   .card-surface {
-    @apply rounded-2xl border border-white/10 bg-navy-800/60;
+    @apply rounded-2xl border border-steel-700/40 bg-carbon-800/70;
   }
 
   .section-alt {
-    @apply bg-navy-900/50;
+    @apply bg-carbon-900/60;
   }
 
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
 
+  /* Semantic UI: hardcore dashboard shell */
+  .dashboard-shell {
+    @apply min-h-screen bg-carbon-950 text-steel-100;
+    background-image:
+      radial-gradient(ellipse 70% 45% at 80% 10%, rgba(0, 242, 255, 0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 40% at 10% 80%, rgba(57, 255, 20, 0.04) 0%, transparent 50%),
+      linear-gradient(180deg, var(--rf-carbon-900) 0%, var(--rf-carbon-950) 100%);
+  }
+
+  /* Semantic UI: primary workout CTA */
+  .btn-start-now {
+    @apply inline-flex items-center justify-center rounded-xl bg-octane-500 px-8 py-4 font-display text-lg font-bold uppercase tracking-wide text-carbon-950 shadow-glow-octane transition-all;
+  }
+
+  .btn-start-now:hover {
+    @apply bg-octane-400 shadow-glow-octane;
+  }
+
+  .btn-start-now:active {
+    @apply bg-octane-600 scale-[0.98];
+  }
+
+  .btn-start-now:disabled {
+    @apply cursor-not-allowed bg-octane-800 text-steel-400 shadow-none opacity-60;
+  }
+
+  /* Semantic UI: health metric / progress ring */
+  .progress-ring-vitality {
+    @apply rounded-full border-4 border-carbon-700;
+    box-shadow: var(--rf-glow-vitality), inset 0 0 12px rgba(57, 255, 20, 0.15);
+    border-color: var(--rf-vitality-500);
+  }
+
+  /* Semantic UI: achievement banner */
+  .banner-achievement {
+    @apply rounded-2xl border border-circuit-500/50 bg-gradient-to-r from-circuit-950/80 via-carbon-800 to-carbon-900 px-6 py-4 text-steel-100 shadow-glow-circuit;
+  }
+
   .mobile-nav-overlay {
-    @apply fixed inset-0 z-[200] bg-navy-950/75 md:hidden;
+    @apply fixed inset-0 z-[200] bg-carbon-950/80 md:hidden;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -58,7 +132,7 @@
   }
 
   .mobile-nav-drawer {
-    @apply fixed top-0 right-0 z-[210] flex h-[100dvh] w-[min(88vw,320px)] flex-col border-l border-white/10 bg-navy-900 shadow-2xl md:hidden;
+    @apply fixed top-0 right-0 z-[210] flex h-[100dvh] w-[min(88vw,320px)] flex-col border-l border-steel-700/50 bg-carbon-900 shadow-2xl md:hidden;
     transform: translateX(100%);
     transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   }
@@ -96,6 +170,6 @@
 
 @media (prefers-contrast: more) {
   .nav-glass {
-    @apply border-white/30;
+    @apply border-steel-300/50;
   }
 }
