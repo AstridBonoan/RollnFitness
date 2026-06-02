@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import {
   DEMO_CREDENTIALS,
   ensureDemoUser,
-  findUser,
+  findUserByLogin,
   getCurrentUser,
   interestLabel,
-  isDemoCredentials,
+  isDemoSignIn,
   loadUsers,
   mobilityLabel,
   saveUsers,
@@ -43,7 +43,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   const [error, setError] = useState('')
   const [mobility, setMobility] = useState('')
   const [interest, setInterest] = useState('')
-  const [form, setForm] = useState({ email: '', username: '', password: '' })
+  const [form, setForm] = useState({ email: '', username: '', login: '', password: '' })
 
   useEffect(() => {
     ensureDemoUser()
@@ -53,7 +53,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
     const user = getCurrentUser()
     if (!user) return
 
-    setForm({ email: user.email, username: user.username, password: user.password })
+    setForm({ email: user.email, username: user.username, login: user.username, password: user.password })
     setMobility(user.mobility ?? '')
     setInterest(user.interest ?? '')
 
@@ -67,7 +67,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   }, [])
 
   const resetForm = () => {
-    setForm({ email: '', username: '', password: '' })
+    setForm({ email: '', username: '', login: '', password: '' })
     setMobility('')
     setInterest('')
     setError('')
@@ -80,7 +80,7 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   }
 
   const beginOnboarding = (user: User) => {
-    setForm({ email: user.email, username: user.username, password: user.password })
+    setForm({ email: user.email, username: user.username, login: user.username, password: user.password })
     setSession(user.email)
     onAuthChange()
     setMobility(user.mobility ?? '')
@@ -89,11 +89,20 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
   }
 
   const fillDemoCredentials = () => {
-    setForm({
-      email: DEMO_CREDENTIALS.email,
-      username: DEMO_CREDENTIALS.username,
-      password: DEMO_CREDENTIALS.password,
-    })
+    if (mode === 'sign-in') {
+      setForm((f) => ({
+        ...f,
+        login: DEMO_CREDENTIALS.username,
+        password: DEMO_CREDENTIALS.password,
+      }))
+    } else {
+      setForm({
+        email: DEMO_CREDENTIALS.email,
+        username: DEMO_CREDENTIALS.username,
+        login: '',
+        password: DEMO_CREDENTIALS.password,
+      })
+    }
     setError('')
   }
 
@@ -136,18 +145,18 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
     e.preventDefault()
     setError('')
 
-    if (isDemoCredentials(form.email, form.username, form.password)) {
+    if (isDemoSignIn(form.login, form.password)) {
       ensureDemoUser()
     }
 
-    const user = findUser(form.email, form.username, form.password)
+    const user = findUserByLogin(form.login, form.password)
     if (!user) {
-      setError('Invalid email, username, or password. Please try again.')
+      setError('Invalid username, email, or password. Please try again.')
       return
     }
 
     setSession(user.email)
-    setForm({ email: user.email, username: user.username, password: user.password })
+    setForm({ email: user.email, username: user.username, login: user.username, password: user.password })
     onAuthChange()
 
     if (user.onboarded) {
@@ -375,16 +384,15 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
             Demo account
           </h2>
           <p className="mt-1 text-sm text-slate-300">
-            Use these credentials to try the full 3-step sign-up flow, or sign in after you finish.
+            Use these credentials to try the full 3-step sign-up flow, or sign in with username or
+            email after you finish.
           </p>
           <dl className="mt-4 space-y-2 rounded-lg bg-navy-950/60 px-4 py-3 font-mono text-sm">
             <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-              <dt className="text-slate-400">Email</dt>
-              <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.email}</dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
-              <dt className="text-slate-400">Username</dt>
-              <dd className="font-semibold text-brand-200">{DEMO_CREDENTIALS.username}</dd>
+              <dt className="text-slate-400">Username / email</dt>
+              <dd className="font-semibold text-brand-200">
+                {DEMO_CREDENTIALS.username} or {DEMO_CREDENTIALS.email}
+              </dd>
             </div>
             <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
               <dt className="text-slate-400">Password</dt>
@@ -448,35 +456,55 @@ export function JoinPage({ onNavigate, onAuthChange }: JoinPageProps) {
           className="space-y-5 card-surface p-6 sm:p-8"
           aria-label={mode === 'sign-up' ? 'Sign up form' : 'Sign in form'}
         >
-          <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-white">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              autoComplete="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className={inputClass}
-            />
-          </div>
+          {mode === 'sign-up' ? (
+            <>
+              <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-white">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
 
-          <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-white">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              required
-              autoComplete="username"
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className={inputClass}
-            />
-          </div>
+              <div>
+                <label htmlFor="username" className="block text-sm font-semibold text-white">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  required
+                  autoComplete="username"
+                  value={form.username}
+                  onChange={(e) => setForm({ ...form, username: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+            </>
+          ) : (
+            <div>
+              <label htmlFor="login" className="block text-sm font-semibold text-white">
+                Username or email
+              </label>
+              <input
+                id="login"
+                type="text"
+                required
+                autoComplete="username"
+                value={form.login}
+                onChange={(e) => setForm({ ...form, login: e.target.value })}
+                className={inputClass}
+                placeholder="DemoUser or demo@rollnfitness.com"
+              />
+            </div>
+          )}
 
           <div>
             <label htmlFor="password" className="block text-sm font-semibold text-white">

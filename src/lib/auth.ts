@@ -22,11 +22,20 @@ export const DEMO_USER: User = {
   onboarded: false,
 }
 
-export function isDemoCredentials(email: string, username: string, password: string): boolean {
+export function isDemoSignIn(login: string, password: string): boolean {
+  if (password !== DEMO_CREDENTIALS.password) return false
+  const id = login.trim().toLowerCase()
+  return id === DEMO_CREDENTIALS.email || id === DEMO_CREDENTIALS.username.toLowerCase()
+}
+
+export function findUserByLogin(login: string, password: string): User | null {
+  const id = login.trim().toLowerCase()
   return (
-    email.trim().toLowerCase() === DEMO_CREDENTIALS.email &&
-    username.trim().toLowerCase() === DEMO_CREDENTIALS.username.toLowerCase() &&
-    password === DEMO_CREDENTIALS.password
+    loadUsers().find(
+      (u) =>
+        u.password === password &&
+        (u.email.toLowerCase() === id || u.username.toLowerCase() === id),
+    ) ?? null
   )
 }
 
@@ -91,17 +100,6 @@ export function updateUser(email: string, patch: Partial<User>) {
   users[index] = { ...users[index], ...patch }
   saveUsers(users)
   return users[index]
-}
-
-export function findUser(email: string, username: string, password: string): User | null {
-  return (
-    loadUsers().find(
-      (u) =>
-        u.email.toLowerCase() === email.trim().toLowerCase() &&
-        u.username.toLowerCase() === username.trim().toLowerCase() &&
-        u.password === password,
-    ) ?? null
-  )
 }
 
 export function mobilityLabel(id: string): string {
