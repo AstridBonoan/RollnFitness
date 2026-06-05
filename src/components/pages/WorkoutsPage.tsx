@@ -38,7 +38,8 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
     [user?.mobility],
   )
 
-  const totalPrograms = librarySections.reduce((n, s) => n + s.workoutCount, 0)
+  const libraryListings = librarySections.reduce((n, s) => n + s.workoutCount, 0)
+  const uniquePrograms = workouts.length
 
   useEffect(() => {
     const mobilityId = sessionStorage.getItem(MOBILITY_SCROLL_KEY)
@@ -51,8 +52,13 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
   return (
     <PageShell
       title="Adaptive Workouts"
-      description="Programs are organized by how you move, then by training category. Each includes a guided video and mobility-specific modifications."
+      description={`${uniquePrograms} video programs organized by how you move, then by training category. Each includes guided instruction and mobility-specific modifications.`}
     >
+      <p className="mb-8 rounded-xl border border-octane-600/25 bg-octane-950/30 px-4 py-3 text-sm text-slate-300">
+        <strong className="text-white">{uniquePrograms} unique programs</strong>
+        {' · '}
+        {libraryListings} listings across mobility levels and categories
+      </p>
       {user?.mobility && (
         <p className="mb-6 rounded-xl border border-octane-600/30 bg-octane-950/40 px-4 py-3 text-sm text-octane-200">
           Your profile: <strong>{mobilityLabel(user.mobility)}</strong> — that section is listed
@@ -157,7 +163,7 @@ export function WorkoutsPage({ onNavigate }: WorkoutsPageProps) {
         })}
       </div>
 
-      {totalPrograms === 0 && (
+      {libraryListings === 0 && (
         <p className="rounded-xl border border-dashed border-white/20 p-8 text-center text-slate-400">
           No programs available yet.
         </p>
