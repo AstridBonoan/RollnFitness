@@ -31,12 +31,46 @@ export function parseWorkoutRoute(pathname: string): string | null {
   return match?.[1] ?? null
 }
 
+export type WorkoutLevelFilter = 'all' | 'beginner' | 'intermediate' | 'advanced'
+
+export const WORKOUT_LEVEL_FILTERS: { id: WorkoutLevelFilter; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'beginner', label: 'Beginner' },
+  { id: 'intermediate', label: 'Intermediate' },
+  { id: 'advanced', label: 'Advanced' },
+]
+
 export function workoutMatchesCategory(
   workout: WorkoutProgram,
   category: WorkoutCategory | 'all',
 ): boolean {
   if (category === 'all') return true
   return workout.categories.includes(category)
+}
+
+export function workoutMatchesLevel(
+  workout: WorkoutProgram,
+  filter: WorkoutLevelFilter,
+): boolean {
+  if (filter === 'all') return true
+  const level = workout.level.toLowerCase()
+  if (level === 'all levels') return true
+  return level === filter
+}
+
+export function getWorkoutsForMobilityCategory(
+  mobilityId: MobilityId,
+  category: WorkoutCategory,
+  levelFilter: WorkoutLevelFilter = 'all',
+): WorkoutProgram[] {
+  return workouts
+    .filter(
+      (w) =>
+        (w.mobility as readonly string[]).includes(mobilityId) &&
+        w.categories.includes(category) &&
+        workoutMatchesLevel(w, levelFilter),
+    )
+    .sort((a, b) => a.title.localeCompare(b.title))
 }
 
 export function workoutMatchesMobility(
