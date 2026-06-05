@@ -8,6 +8,8 @@ import { WorkoutDetailPage } from './components/pages/WorkoutDetailPage'
 import { normalizeHashRoute, parseWorkoutRoute } from './lib/workouts'
 import { ProgressPage } from './components/pages/ProgressPage'
 import { NutritionPage } from './components/pages/NutritionPage'
+import { RecipeDetailPage } from './components/pages/RecipeDetailPage'
+import { parseRecipeRoute } from './lib/recipes'
 import { ChallengesPage } from './components/pages/ChallengesPage'
 import { SportsPassPage } from './components/pages/SportsPassPage'
 import { JoinPage } from './components/pages/JoinPage'
@@ -46,6 +48,7 @@ function App() {
   }
 
   const workoutId = parseWorkoutRoute(pathname)
+  const recipeId = parseRecipeRoute(pathname)
 
   return (
     <div className="dashboard-shell">
@@ -63,7 +66,8 @@ function App() {
         {pathname === '/workouts' && <WorkoutsPage onNavigate={navigateTo} />}
         {workoutId && <WorkoutDetailPage workoutId={workoutId} onNavigate={navigateTo} />}
         {pathname === '/progress' && <ProgressPage />}
-        {pathname === '/nutrition' && <NutritionPage />}
+        {pathname === '/nutrition' && <NutritionPage onNavigate={navigateTo} />}
+        {recipeId && <RecipeDetailPage recipeId={recipeId} onNavigate={navigateTo} />}
         {pathname === '/challenges' && <ChallengesPage />}
         {pathname === '/sports-pass' && <SportsPassPage onNavigate={navigateTo} />}
         {pathname === '/join' && (

@@ -99,7 +99,8 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
                       onClick={() => handleNavigate(link.path)}
                       aria-current={
                     pathname === link.path ||
-                    (link.path === '/workouts' && pathname.startsWith('/workouts/'))
+                    (link.path === '/workouts' && pathname.startsWith('/workouts/')) ||
+                    (link.path === '/nutrition' && pathname.startsWith('/nutrition/'))
                       ? 'page'
                       : undefined
                   }
@@ -160,7 +161,8 @@ export function Navbar({ pathname, onNavigate, currentUser, onSignOut }: NavbarP
                   onClick={() => handleNavigate(link.path)}
                   aria-current={
                     pathname === link.path ||
-                    (link.path === '/workouts' && pathname.startsWith('/workouts/'))
+                    (link.path === '/workouts' && pathname.startsWith('/workouts/')) ||
+                    (link.path === '/nutrition' && pathname.startsWith('/nutrition/'))
                       ? 'page'
                       : undefined
                   }
